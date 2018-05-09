@@ -11,7 +11,6 @@
         android:layout_width="163dp"
         android:layout_height="93dp"
         android:layout_marginTop="20dp"
-        android:onClick="helpButton"
         android:text="HELP"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,14 +50,17 @@
         app:layout_constraintEnd_toStartOf="@+id/contact2"
         app:layout_constraintStart_toEndOf="@+id/contact1" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="319dp"
         android:layout_height="197dp"
         android:layout_marginTop="36dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/HELPbutton" />
+        app:layout_constraintTop_toBottomOf="@+id/HELPbutton"
+        android:id="@+id/map"
+        tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
 
     <TextView
         android:id="@+id/textView2"
@@ -66,8 +68,7 @@
         android:layout_height="44dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Hello, *name*!"
-        android:textAppearance="@android:style/TextAppearance.Material.Title"
+        android:text="Hello, Atticus!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
