@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">MyApp</string>
+    <string name="app_name">IBM Dementia</string>
+    <string name="google_android_map_api_key">"AIzaSyBnE8HzdqwXtG6UxserDCSgbbdDUUfv9Ao"</string>
 </resources>
