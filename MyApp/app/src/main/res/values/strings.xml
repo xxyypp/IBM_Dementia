@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">IBM Dementia</string>
     <string name="google_android_map_api_key">"AIzaSyBnE8HzdqwXtG6UxserDCSgbbdDUUfv9Ao"</string>
+    <string name="success">Send Successful!</string>
 </resources>
