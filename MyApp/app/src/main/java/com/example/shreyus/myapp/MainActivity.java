@@ -46,8 +46,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     Button sendBtn;
     EditText txtphoneNo;
     EditText txtMessage;
-    String phoneNum = "123456789";
+    String phoneNum1 = "5556",phoneNum2 = "5554", phoneNum3 = "5556";//vm1 5554, vm2 5556
     String message = "Help!";
+    boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
     //private EditText num;
     //private EditText content;
 
@@ -61,19 +62,29 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         mapFragment.getMapAsync(this);
 
         //SMS
-        //num=(EditText)findViewById(R.id.number);//get num
-        //content=(EditText)findViewById(R.id.content);//get sms
-        Button contact1=(Button)findViewById(R.id.contact1);//click button1 action:
+        Button sendContact1=(Button)findViewById(R.id.contact1);//click button1 action:
+        Button sendContact2=(Button)findViewById(R.id.contact2);
+        Button sendContact3=(Button)findViewById(R.id.contact3);
         //contact1.setOnClickListener(new ButtonClickListener());
 
-        contact1.setOnClickListener(new View.OnClickListener(){
+        sendContact1.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
+                boolSend1 = true;
                 sendSMSMessage();
             }
         });
-
-//        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
+        sendContact2.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                boolSend2 = true;
+                sendSMSMessage();
+            }
+        });
+        sendContact3.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                boolSend3 = true;
+                sendSMSMessage();
+            }
+        });
     }
 
 
@@ -104,13 +115,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     }
 
     //SMS
-    protected void sendSMSMessage(){
-        if(ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED ){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)){
-                //do nothing
-            }else{
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSION_REQUEST_SEND_SMS);
-            }
+    protected void sendSMSMessage() {
+
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},MY_PERMISSION_REQUEST_SEND_SMS);
+        } else {
+            SendTextMsg();
         }
     }
 
@@ -119,38 +129,31 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_SEND_SMS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(phoneNum, null, message, null, null);
-                    Toast.makeText(getApplicationContext(), "SMS sent. Please be do not worry, helper's coming!", Toast.LENGTH_LONG).show();
+                    SendTextMsg();
                 } else {
-                    Toast.makeText(getApplicationContext(), "SMS failed, try again.", Toast.LENGTH_LONG).show();
-                    return;
+                    Toast.makeText(getApplicationContext(),"SMS faild, please try again.", Toast.LENGTH_LONG).show();
                 }
             }
         }
     }
-/*
-    private final class ButtonClickListener implements View.OnClickListener{
-        @Override
-        public void onClick(View v){
-            String number= "123456789";
-            String content="Help!";
-            SmsManager manager=SmsManager.getDefault();//Deploy android.telephony.SmsManager
-            ArrayList<String> texts=manager.divideMessage(content);
-            for(String text:texts){
-                manager.sendTextMessage(number, null, text, null, null);
-            }
-            Toast.makeText(MainActivity.this, R.string.success, Toast.LENGTH_LONG).show();//Toast->show success or not;
+
+    private void SendTextMsg() {
+        SmsManager smsManager = SmsManager.getDefault();
+
+        if(boolSend1){
+            smsManager.sendTextMessage(phoneNum1, null, message, null, null);
+            boolSend1 = false;
+        }else if(boolSend2){
+            smsManager.sendTextMessage(phoneNum2, null, message, null, null);
+            boolSend2 = false;
+        }else if(boolSend3){
+            smsManager.sendTextMessage(phoneNum3, null, message, null, null);
+            boolSend3 = false;
         }
-    }*/
 
-  /*  @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
+        //Default
+        //smsManager.sendTextMessage(phoneNum, null, message, null, null);
 
-
-
+        Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+    }
 }
