@@ -97,7 +97,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                         if(location != null){
                             TextView textView = findViewById(R.id.location);
                             url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat+ "+" + longi;
-                            textView.setText(location.toString());
+                            textView.setText(Double.toString(lat)+ " , " +Double.toString(longi));
                             Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
                         }else{
