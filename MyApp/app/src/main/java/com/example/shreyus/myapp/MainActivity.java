@@ -50,7 +50,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     private GoogleMap mMap;
 
     //Current Location
-    private FusedLocationProviderClient client;
+    private FusedLocationProviderClient locationClient;
+    String url;
 
     //SMS
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
@@ -72,7 +73,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         requestPermissions();
 
-        client = LocationServices.getFusedLocationProviderClient(this);
+        locationClient = LocationServices.getFusedLocationProviderClient(this);
         final Button helpButton = findViewById(R.id.HELPbutton);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,12 +89,19 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
-                client.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>(){
+                locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>(){
                     @Override
                     public void onSuccess(Location location){
+                        double lat = location.getLatitude();
+                        double longi = location.getLongitude();
                         if(location != null){
                             TextView textView = findViewById(R.id.location);
+                            url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat+ "+" + longi;
                             textView.setText(location.toString());
+                            Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
+                            sendSMSMessage();
+                        }else{
+                            Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -193,17 +201,25 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if(boolSend1){
             smsManager.sendTextMessage(phoneNum1, null, message, null, null);
             boolSend1 = false;
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else if(boolSend2){
             smsManager.sendTextMessage(phoneNum2, null, message, null, null);
             boolSend2 = false;
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else if(boolSend3){
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+        }else{
+            smsManager.sendTextMessage(phoneNum1, null, url, null, null);
+            smsManager.sendTextMessage(phoneNum2, null, url, null, null);
+            smsManager.sendTextMessage(phoneNum3, null, url, null, null);
+            Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }
 
         //Default
         //smsManager.sendTextMessage(phoneNum, null, message, null, null);
 
-        Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+
     }
 }
