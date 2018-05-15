@@ -256,15 +256,17 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     void parseJsonData(String jsonString) {
         try {
-            JSONObject object = new JSONObject(jsonString);
-            JSONArray fruitsArray = object.getJSONArray("results");
+            JSONObject allJSON = new JSONObject(jsonString);
+            JSONArray locationArray = allJSON.getJSONArray("results");
             ArrayList al = new ArrayList();
 
-            for(int i = 0; i < fruitsArray.length(); ++i) {
-                al.add(fruitsArray.getString(i));
+            for(int i = 0; i < locationArray.length(); ++i) {
+                JSONObject locationObj = locationArray.getJSONObject(i);
+                //al.add(locationArray.getString(i));
+                Toast.makeText(getApplicationContext(), locationObj.getString("name"), Toast.LENGTH_LONG).show();
             }
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
-            jsontxt.setAdapter(adapter);
+            //ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
+            //jsontxt.setAdapter(adapter);
             Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
