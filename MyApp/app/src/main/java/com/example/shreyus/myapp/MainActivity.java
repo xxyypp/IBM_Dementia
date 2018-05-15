@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
@@ -61,6 +63,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
 
+
+
     //Google maps
     private GoogleMap mMap;
 
@@ -71,6 +75,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     ListView jsontxt;
     String url;
     String urljson;
+    String destLat = "123";
+    String destLongi = "456";
 
     //SMS
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
@@ -110,22 +116,24 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                     public void onSuccess(Location location){
                         double lat = location.getLatitude();
                         double longi = location.getLongitude();
-
                         if(location != null){
                             TextView textView = findViewById(R.id.location);
                             url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat+ "+" + longi;
-                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+longi+"&radius=1000&type=cafe&key="+PLACES_API_KEY;
+                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+longi+"&rankby=distance&type=cafe&key="+PLACES_API_KEY;
                             textView.setText(Double.toString(lat)+ " , " +Double.toString(longi));
                             //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
                         }else{
                             Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                         }
+                        /************ Parse Json *******************/
                         jsontxt = findViewById(R.id.jsonTXT);
                         StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
                             @Override
                             public void onResponse(String string) {
                                 parseJsonData(string);
+                                //get longi/lat
+                                parseJsonLatLongi(string);
                             }
                         }, new Response.ErrorListener() {
                             @Override
@@ -135,6 +143,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                         });
                         RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
                         rQueue.add(request);
+
                     }
                 });
 
@@ -267,6 +276,42 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
             jsontxt.setAdapter(adapter);
             Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void parseJsonLatLongi(String jsonString) {
+        try {
+            JSONObject allJSON = new JSONObject(jsonString);
+            JSONArray locationArray = allJSON.getJSONArray("results");
+            ArrayList al = new ArrayList();
+
+            //for(int i = 0; i < locationArray.length(); ++i) {
+            JSONObject locationObj = locationArray.getJSONObject(0);
+            JSONObject geometry = locationObj.getJSONObject("geometry");
+            JSONObject location = geometry.getJSONObject("location");
+            al.add(location.getString("lat"));
+            destLat = location.getString("lat");
+            destLongi = location.getString("lng");
+            Toast.makeText(getApplicationContext(), "Dest lat longi: ." + destLat + "," + destLongi,Toast.LENGTH_LONG).show();
+
+            /************ Navigation *******************/
+            TextView destLocation = findViewById(R.id.destLocation);
+            destLocation.setText(destLat+ " , " +destLongi);
+            //destLocation
+            Uri gmmIntentUri = Uri.parse("google.navigation:q="+destLat+","+destLongi+"&mode=w");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
+
+
+            //}
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
+            jsontxt.setAdapter(adapter);
+            //Toast.makeText(getApplicationContext(), "JSON function parseJsonLatLongi called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
