@@ -114,7 +114,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                         if(location != null){
                             TextView textView = findViewById(R.id.location);
                             url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat+ "+" + longi;
-                            urljson = "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="+lat+","+longi+"&radius=1000&type=cafe&key="+PLACES_API_KEY;
+                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+longi+"&radius=1000&type=cafe&key="+PLACES_API_KEY;
                             textView.setText(Double.toString(lat)+ " , " +Double.toString(longi));
                             //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
@@ -262,11 +262,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
             for(int i = 0; i < locationArray.length(); ++i) {
                 JSONObject locationObj = locationArray.getJSONObject(i);
-                //al.add(locationArray.getString(i));
-                Toast.makeText(getApplicationContext(), locationObj.getString("name"), Toast.LENGTH_LONG).show();
+                al.add(locationObj.getString("name"));
             }
-            //ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
-            //jsontxt.setAdapter(adapter);
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
+            jsontxt.setAdapter(adapter);
             Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
