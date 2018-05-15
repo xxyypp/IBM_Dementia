@@ -3,20 +3,29 @@ package com.example.shreyus.myapp;
 import java.util.ArrayList;
 
 //Location import
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import java.util.ArrayList;
 
 //SMS import
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.View;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.ActivityCompat;
@@ -41,23 +50,30 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
-    //Googlemap
+    String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
+
+    //Google maps
     private GoogleMap mMap;
 
     //Current Location
     private FusedLocationProviderClient locationClient;
+
+    //JSON closest location
+    ListView jsontxt;
     String url;
+    String urljson;
 
     //SMS
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
-    Button sendBtn;
-    EditText txtphoneNo;
-    EditText txtMessage;
     String phoneNum1 = "5556", phoneNum2 = "5554", phoneNum3 = "5556";//vm1 5554, vm2 5556
     String message = "Help!";
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
@@ -94,22 +110,36 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                     public void onSuccess(Location location){
                         double lat = location.getLatitude();
                         double longi = location.getLongitude();
+
                         if(location != null){
                             TextView textView = findViewById(R.id.location);
                             url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat+ "+" + longi;
+                            urljson = "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="+lat+","+longi+"&radius=1000&type=cafe&key="+PLACES_API_KEY;
                             textView.setText(Double.toString(lat)+ " , " +Double.toString(longi));
-                            Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
                         }else{
                             Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                         }
+                        jsontxt = findViewById(R.id.jsonTXT);
+                        StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String string) {
+                                parseJsonData(string);
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                Toast.makeText(getApplicationContext(), "Some error occurred!!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
+                        rQueue.add(request);
                     }
                 });
+
             }
         });
-
-
-
 
         //GoogleMap
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -201,20 +231,20 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if(boolSend1){
             smsManager.sendTextMessage(phoneNum1, null, message, null, null);
             boolSend1 = false;
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else if(boolSend2){
             smsManager.sendTextMessage(phoneNum2, null, message, null, null);
             boolSend2 = false;
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else if(boolSend3){
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else{
             smsManager.sendTextMessage(phoneNum1, null, url, null, null);
             smsManager.sendTextMessage(phoneNum2, null, url, null, null);
             smsManager.sendTextMessage(phoneNum3, null, url, null, null);
-            Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }
 
         //Default
@@ -222,4 +252,23 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
 
     }
+
+
+    void parseJsonData(String jsonString) {
+        try {
+            JSONObject object = new JSONObject(jsonString);
+            JSONArray fruitsArray = object.getJSONArray("results");
+            ArrayList al = new ArrayList();
+
+            for(int i = 0; i < fruitsArray.length(); ++i) {
+                al.add(fruitsArray.getString(i));
+            }
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
+            jsontxt.setAdapter(adapter);
+            Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
