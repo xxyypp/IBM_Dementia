@@ -61,9 +61,8 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
+    /********************************************** Pre-define ******************************************/
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
-
-
 
     //Google maps
     private GoogleMap mMap;
@@ -85,16 +84,14 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
     //private EditText num;
     //private EditText content;
-
+    /********************************************** End Pre-define ******************************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //Current Location
-
         requestPermissions();
-
         locationClient = LocationServices.getFusedLocationProviderClient(this);
         final Button helpButton = findViewById(R.id.HELPbutton);
         helpButton.setOnClickListener(new View.OnClickListener() {
@@ -102,13 +99,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             public void onClick(View view) {
                 //if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED )
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                    requestPermissions();
                     return;
                 }
                 locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>(){
@@ -211,7 +202,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         return false;
     }
 
-    //SMS
+    /********************************************** Function: SMS part ******************************************/
     protected void sendSMSMessage() {
 
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
@@ -234,26 +225,27 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         }
     }
 
+    //***** Main function to send txt message to pre-define contact short-cut *******
     private void SendTextMsg() {
         SmsManager smsManager = SmsManager.getDefault();
 
         if(boolSend1){
             smsManager.sendTextMessage(phoneNum1, null, message, null, null);
             boolSend1 = false;
-            //Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else if(boolSend2){
             smsManager.sendTextMessage(phoneNum2, null, message, null, null);
             boolSend2 = false;
-            //Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else if(boolSend3){
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
-            //Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else{
             smsManager.sendTextMessage(phoneNum1, null, url, null, null);
             smsManager.sendTextMessage(phoneNum2, null, url, null, null);
             smsManager.sendTextMessage(phoneNum3, null, url, null, null);
-            //Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }
 
         //Default
@@ -261,8 +253,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
 
     }
+    /********************************************** End SMS function ******************************************/
 
-
+    /********************************************** Function: Search the nearest safe place  *****************************************/
     void parseJsonData(String jsonString) {
         try {
             JSONObject allJSON = new JSONObject(jsonString);
@@ -281,6 +274,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         }
     }
 
+    //************ Search the nearest safe place *******************
     void parseJsonLatLongi(String jsonString) {
         try {
             JSONObject allJSON = new JSONObject(jsonString);
@@ -311,10 +305,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             //}
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
             jsontxt.setAdapter(adapter);
-            //Toast.makeText(getApplicationContext(), "JSON function parseJsonLatLongi called.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "JSON function parseJsonLatLongi called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    /********************************************** End Search the nearest safe place  *****************************************/
 
 }
