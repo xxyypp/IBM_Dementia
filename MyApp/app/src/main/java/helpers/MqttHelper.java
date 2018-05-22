@@ -11,6 +11,9 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.io.UnsupportedEncodingException;
+
 public class MqttHelper {
         public MqttAndroidClient mqttAndroidClient;
 
@@ -21,6 +24,10 @@ public class MqttHelper {
 
         final String username = "xxxxxxx";
         final String password = "yyyyyyy";
+
+        final String topic = "Publisher";
+        final String payload = "Hello from Android";
+        byte[] encodedPayload = new byte[0];
 
         public MqttHelper(Context context){
             mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
@@ -72,6 +79,7 @@ public class MqttHelper {
                         disconnectedBufferOptions.setDeleteOldestMessages(false);
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
                         subscribeToTopic();
+                        publishToTopic();
                     }
 
                     @Override
@@ -86,6 +94,15 @@ public class MqttHelper {
             }
         }
 
+        private void publishToTopic(){
+            try {
+                encodedPayload = payload.getBytes("UTF-8");
+                MqttMessage message = new MqttMessage(encodedPayload);
+                mqttAndroidClient.publish(topic, message);
+            } catch (UnsupportedEncodingException | MqttException e) {
+                e.printStackTrace();
+            }
+        }
 
         private void subscribeToTopic() {
             try {
