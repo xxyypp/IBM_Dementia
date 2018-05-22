@@ -1,5 +1,6 @@
 package com.example.shreyus.myapp;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 //Location import
@@ -106,7 +107,42 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //MQTT
+//        //MQTT
+//        final Button sendMqtt = findViewById(R.id.sendMqtt);
+//        final String topic = "Publisher";
+//        final String payload = "Hello from Android \n";
+//        final byte[][] encodedPayload = {new byte[0]};
+//        sendMqtt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String clientId = MqttClient.generateClientId();
+//                MqttAndroidClient client =
+//                        new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
+//                                clientId);
+//
+//                try {
+//                    IMqttToken token = client.connect();
+//                    token.setActionCallback(new IMqttActionListener() {
+//                        @Override
+//                        public void onSuccess(IMqttToken asyncActionToken) {
+//                            // We are connected
+//                            Log.d(TAG, "onSuccess");
+//                        }
+//
+//                        @Override
+//                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+//                            // Something went wrong e.g. connection timeout or firewall problems
+//                            Log.d(TAG, "onFailure");
+//
+//                        }
+//                    });
+//                } catch (MqttException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        });
+
         dataReceived = (TextView)findViewById(R.id.dataReceived);
         startMqtt();
 
@@ -189,42 +225,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 sendSMSMessage();
             }
         });
-
-
-
-
-        /*Button MQTTbutton = (Button) findViewById(R.id.MQTTbutton);
-
-        MQTTbutton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String clientId = MqttClient.generateClientId();
-                MqttAndroidClient client = new MqttAndroidClient(getApplicationContext(), "192.168.43.203:1883",
-                        clientId);
-
-                try {
-                    IMqttToken token = client.connect();
-                    token.setActionCallback(new IMqttActionListener() {
-                        @Override
-                        public void onSuccess(IMqttToken asyncActionToken) {
-                            // We are connected
-                            Log.d("Success", "onSuccess");
-                            Toast.makeText(getApplicationContext(), "MQTT SUCCESS", Toast.LENGTH_LONG).show();
-                        }
-
-                        @Override
-                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                            // Something went wrong e.g. connection timeout or firewall problems
-                            Log.d("Fail", "onFailure");
-                            Toast.makeText(getApplicationContext(), "MQTT FAIL", Toast.LENGTH_LONG).show();
-
-                        }
-                    });
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });*/
 
     }
 
