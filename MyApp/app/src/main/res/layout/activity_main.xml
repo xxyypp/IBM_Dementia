@@ -88,15 +88,17 @@
     <ListView
         android:id="@+id/jsonTXT"
         android:layout_width="351dp"
-        android:layout_height="86dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="28dp"
+        app:layout_constraintBottom_toBottomOf="@+id/MQTTbutton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/map" />
+        app:layout_constraintTop_toBottomOf="@+id/map"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/destLocation"
@@ -108,4 +110,17 @@
         android:text="destLocation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/MQTTbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="160dp"
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="68dp"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/contact3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
 </android.support.constraint.ConstraintLayout>
