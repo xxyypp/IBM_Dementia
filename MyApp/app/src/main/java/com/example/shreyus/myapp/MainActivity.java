@@ -54,12 +54,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import helpers.MqttHelper;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -67,6 +73,11 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
     /********************************************** Pre-define ******************************************/
+
+    //MQTT
+    MqttHelper mqttHelper;
+    TextView dataReceived;
+
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
 
     //Google maps
@@ -94,6 +105,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //MQTT
+        dataReceived = (TextView)findViewById(R.id.dataReceived);
+        startMqtt();
 
         //Current Location
         requestPermissions();
@@ -176,7 +191,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         });
 
 
-        Button MQTTbutton = (Button) findViewById(R.id.MQTTbutton);
+
+
+        /*Button MQTTbutton = (Button) findViewById(R.id.MQTTbutton);
 
         MQTTbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -207,8 +224,26 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 }
 
             }
-        });
+        });*/
 
+    }
+
+    //MQTT
+    private void startMqtt(){
+        mqttHelper = new MqttHelper(getApplicationContext());
+        mqttHelper.setCallback(new MqttCallbackExtended(){
+            @Override
+            public void connectComplete(boolean b, String s){}
+            @Override
+            public void connectionLost(Throwable throwable) {}
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                Log.w("Debug",mqttMessage.toString());
+                dataReceived.setText(mqttMessage.toString());
+            }
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
+        });
     }
 
     //Location
