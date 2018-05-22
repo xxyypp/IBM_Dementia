@@ -52,6 +52,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,19 +107,19 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                     requestPermissions();
                     return;
                 }
-                locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>(){
+                locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
                     @Override
-                    public void onSuccess(Location location){
+                    public void onSuccess(Location location) {
                         double lat = location.getLatitude();
                         double longi = location.getLongitude();
-                        if(location != null){
+                        if (location != null) {
                             TextView textView = findViewById(R.id.location);
-                            url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat+ "+" + longi;
-                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+longi+"&rankby=distance&type=cafe&key="+PLACES_API_KEY;
-                            textView.setText(Double.toString(lat)+ " , " +Double.toString(longi));
+                            url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
+                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe&key=" + PLACES_API_KEY;
+                            textView.setText(Double.toString(lat) + " , " + Double.toString(longi));
                             //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
-                        }else{
+                        } else {
                             Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                         }
                         /************ Parse Json *******************/
@@ -146,29 +151,64 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         mapFragment.getMapAsync(this);
 
         //SMS
-        Button sendContact1=(Button)findViewById(R.id.contact1);//click button1 action:
-        Button sendContact2=(Button)findViewById(R.id.contact2);
-        Button sendContact3=(Button)findViewById(R.id.contact3);
+        Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
+        Button sendContact2 = (Button) findViewById(R.id.contact2);
+        Button sendContact3 = (Button) findViewById(R.id.contact3);
         //contact1.setOnClickListener(new ButtonClickListener());
 
-        sendContact1.setOnClickListener(new View.OnClickListener(){
+        sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend1 = true;
                 sendSMSMessage();
             }
         });
-        sendContact2.setOnClickListener(new View.OnClickListener(){
+        sendContact2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend2 = true;
                 sendSMSMessage();
             }
         });
-        sendContact3.setOnClickListener(new View.OnClickListener(){
+        sendContact3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend3 = true;
                 sendSMSMessage();
             }
         });
+
+
+        Button MQTTbutton = (Button) findViewById(R.id.MQTTbutton);
+
+        MQTTbutton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String clientId = MqttClient.generateClientId();
+                MqttAndroidClient client = new MqttAndroidClient(getApplicationContext(), "192.168.43.203:1883",
+                        clientId);
+
+                try {
+                    IMqttToken token = client.connect();
+                    token.setActionCallback(new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            // We are connected
+                            Log.d("Success", "onSuccess");
+                            Toast.makeText(getApplicationContext(), "MQTT SUCCESS", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            // Something went wrong e.g. connection timeout or firewall problems
+                            Log.d("Fail", "onFailure");
+                            Toast.makeText(getApplicationContext(), "MQTT FAIL", Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
     }
 
     //Location
@@ -219,7 +259,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     SendTextMsg();
                 } else {
-                    Toast.makeText(getApplicationContext(),"SMS faild, please try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"SMS failed, please try again.", Toast.LENGTH_LONG).show();
                 }
             }
         }
