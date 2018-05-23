@@ -70,6 +70,31 @@ import helpers.MqttHelper;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+class Locations {
+    private String name;
+    private String lat;
+    private String longi;
+
+    public Locations(String name, String lat, String longi){
+        this.name = name;
+        this.lat = lat;
+        this.longi = longi;
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public String getLat(){
+        return this.lat;
+    }
+
+    public String getLongi(){
+        return this.longi;
+    }
+}
+
+
 public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
@@ -99,6 +124,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     String urljson;
     String destLat = "123";
     String destLongi = "456";
+    String destName = "A safe space";
 
     //SMS
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
@@ -149,8 +175,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                             @Override
                             public void onResponse(String string) {
                                 parseJsonData(string);
-                                //get longi/lat
-                                parseJsonLatLongi(string);
+
                             }
                         }, new Response.ErrorListener() {
                             @Override
@@ -317,13 +342,35 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         try {
             JSONObject allJSON = new JSONObject(jsonString);
             JSONArray locationArray = allJSON.getJSONArray("results");
-            ArrayList al = new ArrayList();
+            JSONObject locationObj, geometry, location;
+
+            ArrayList<Locations> al = new ArrayList<Locations>();
+            ArrayList names = new ArrayList();
 
             for(int i = 0; i < locationArray.length(); ++i) {
-                JSONObject locationObj = locationArray.getJSONObject(i);
-                al.add(locationObj.getString("name"));
+                locationObj = locationArray.getJSONObject(i);
+                geometry = locationObj.getJSONObject("geometry");
+                location = geometry.getJSONObject("location");
+                destLat = location.getString("lat");
+                destLongi = location.getString("lng");
+                destName = locationObj.getString("name");
+                al.add(new Locations(destName,destLat, destLongi));
+                names.add(destName);
             }
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
+
+            /************ Navigation *******************/
+            TextView destLocation = findViewById(R.id.destLocation);
+            destLocation.setText(destLat+ " , " +destLongi);
+            //destLocation
+            Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(0).getLat()+","+al.get(0).getLongi()+"&mode=w");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
+            /******************************************/
+
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
             jsontxt.setAdapter(adapter);
             Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
@@ -331,42 +378,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         }
     }
 
-    /************ Search the nearest safe place *******************/
-    void parseJsonLatLongi(String jsonString) {
-        try {
-            JSONObject allJSON = new JSONObject(jsonString);
-            JSONArray locationArray = allJSON.getJSONArray("results");
-            ArrayList al = new ArrayList();
 
-            //for(int i = 0; i < locationArray.length(); ++i) {
-            JSONObject locationObj = locationArray.getJSONObject(0);
-            JSONObject geometry = locationObj.getJSONObject("geometry");
-            JSONObject location = geometry.getJSONObject("location");
-            al.add(location.getString("lat"));
-            destLat = location.getString("lat");
-            destLongi = location.getString("lng");
-            Toast.makeText(getApplicationContext(), "Dest lat longi: ." + destLat + "," + destLongi,Toast.LENGTH_LONG).show();
-
-            /************ Navigation *******************/
-            TextView destLocation = findViewById(R.id.destLocation);
-            destLocation.setText(destLat+ " , " +destLongi);
-            //destLocation
-            Uri gmmIntentUri = Uri.parse("google.navigation:q="+destLat+","+destLongi+"&mode=w");
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps");
-            if (mapIntent.resolveActivity(getPackageManager()) != null) {
-                startActivity(mapIntent);
-            }
-
-
-            //}
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, al);
-            jsontxt.setAdapter(adapter);
-            Toast.makeText(getApplicationContext(), "JSON function parseJsonLatLongi called.",Toast.LENGTH_LONG).show();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     /********************************************** End Search the nearest safe place  *****************************************/
 

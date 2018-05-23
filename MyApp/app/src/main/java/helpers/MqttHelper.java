@@ -25,7 +25,7 @@ public class MqttHelper {
         final String username = "xxxxxxx";
         final String password = "yyyyyyy";
 
-        final String topic = "Publisher";
+        final String topic = "Test";
         final String payload = "Hello from Android";
         byte[] encodedPayload = new byte[0];
 
