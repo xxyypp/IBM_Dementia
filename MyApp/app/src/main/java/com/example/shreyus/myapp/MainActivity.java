@@ -75,6 +75,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     /********************************************** Pre-define ******************************************/
 
+    //User Setting
+    //public static final String EXTRA_MSG="com.example.myapp.usersetting";
+    public static final String person1 = "person1";
+    public static final String person2 = "person2";
+    public static final String person3 = "person3";
+
     //MQTT
     MqttHelper mqttHelper;
     TextView dataReceived;
@@ -107,43 +113,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        //MQTT
-//        final Button sendMqtt = findViewById(R.id.sendMqtt);
-//        final String topic = "Publisher";
-//        final String payload = "Hello from Android \n";
-//        final byte[][] encodedPayload = {new byte[0]};
-//        sendMqtt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String clientId = MqttClient.generateClientId();
-//                MqttAndroidClient client =
-//                        new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
-//                                clientId);
-//
-//                try {
-//                    IMqttToken token = client.connect();
-//                    token.setActionCallback(new IMqttActionListener() {
-//                        @Override
-//                        public void onSuccess(IMqttToken asyncActionToken) {
-//                            // We are connected
-//                            Log.d(TAG, "onSuccess");
-//                        }
-//
-//                        @Override
-//                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                            // Something went wrong e.g. connection timeout or firewall problems
-//                            Log.d(TAG, "onFailure");
-//
-//                        }
-//                    });
-//                } catch (MqttException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        });
-
-        dataReceived = (TextView)findViewById(R.id.dataReceived);
+        dataReceived = findViewById(R.id.dataReceived);
         startMqtt();
 
         //Current Location
@@ -227,8 +197,20 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         });
 
     }
+    /********************************************** Function: User setting ******************************************/
+    public void userSetting(View view){
+        Intent intent = new Intent(this, UserSetting.class);
+       // EditText editText = findViewById(R.id.testText);
+        //String msg = editText.getText().toString();
+        intent.putExtra(person1, phoneNum1);
+        intent.putExtra(person2, phoneNum2);
+        intent.putExtra(person3, phoneNum3);
+        startActivity(intent);
+    }
 
-    //MQTT
+    /********************************************** End: User setting ******************************************/
+
+    /********************************************** Function: MQTT part ******************************************/
     private void startMqtt(){
         mqttHelper = new MqttHelper(getApplicationContext());
         mqttHelper.setCallback(new MqttCallbackExtended(){
@@ -245,7 +227,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
         });
     }
-
+    /********************************************** End: MQTT part ******************************************/
     //Location
     private void requestPermissions(){
         ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
@@ -349,7 +331,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         }
     }
 
-    //************ Search the nearest safe place *******************
+    /************ Search the nearest safe place *******************/
     void parseJsonLatLongi(String jsonString) {
         try {
             JSONObject allJSON = new JSONObject(jsonString);
