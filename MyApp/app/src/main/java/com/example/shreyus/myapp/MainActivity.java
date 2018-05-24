@@ -160,10 +160,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                         double lat = location.getLatitude();
                         double longi = location.getLongitude();
                         if (location != null) {
-                            TextView textView = findViewById(R.id.location);
+
                             url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
                             urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe&key=" + PLACES_API_KEY;
-                            textView.setText(Double.toString(lat) + " , " + Double.toString(longi));
+
                             //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
                         } else {
@@ -359,8 +359,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             }
 
             /************ Navigation *******************/
-            TextView destLocation = findViewById(R.id.destLocation);
-            destLocation.setText(destLat+ " , " +destLongi);
             //destLocation
             Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(0).getLat()+","+al.get(0).getLongi()+"&mode=w");
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
