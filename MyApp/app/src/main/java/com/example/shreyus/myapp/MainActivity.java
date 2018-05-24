@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -100,6 +102,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     /********************************************** Pre-define ******************************************/
 
+
     //User Setting
     //public static final String EXTRA_MSG="com.example.myapp.usersetting";
     public static final String person1_id = "person1";
@@ -127,9 +130,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     String destLongi = "456";
     String destName = "A safe space";
 
+
     //SMS
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
-    String phoneNum1 = "5556", phoneNum2 = "5554", phoneNum3 = "5556";//vm1 5554, vm2 5556
+    //For sending sms
+    //String phoneNum1 = "5556", phoneNum2 = "5554", phoneNum3 = "5556";//vm1 5554, vm2 5556
+    String phoneNum1 , phoneNum2 , phoneNum3;//vm1 5554, vm2 5556
     String message = "Help!";
     String num1 = phoneNum1;
     String num2 = phoneNum2;
@@ -138,14 +144,27 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
     //private EditText num;
     //private EditText content;
+
+    //For saving data after closing
+    public static final String PREFS_NAME = "MyContact";
+    //SharedPreferences sharedpreferences = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
+    //SharedPreferences.Editor editor = sharedpreferences.edit();
+    //editor.putString(person1_id, num1);
+
     /********************************************** End Pre-define ******************************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //get phone number from database during activity Create
+        SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+        String test = dataSaved.getString(person1_id,null);
+        TextView testview = findViewById(R.id.testout);
+        testview.setText(test);
+        Toast.makeText(getApplicationContext(), "Current num1 is: "+test, Toast.LENGTH_LONG).show();
 
-
+        //MQTT
         dataReceived = findViewById(R.id.dataReceived);
         startMqtt();
 
@@ -235,11 +254,19 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     /********************************************** Implementation: User setting ******************************************/
     public void userSetting(View view){
         Intent intent = new Intent(this, UserSetting.class);
-       // EditText editText = findViewById(R.id.testText);
+        //EditText editText = findViewById(R.id.testText);
         //String msg = editText.getText().toString();
         intent.putExtra(person1_id, phoneNum1);
         intent.putExtra(person2_id, phoneNum2);
         intent.putExtra(person3_id, phoneNum3);
+
+        SharedPreferences savedFile = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = savedFile.edit();
+        editor.putString(person1_id,phoneNum1);
+        //editor.putString(person2_id,phoneNum2);
+        //editor.putString(person3_id,phoneNum3);
+        editor.commit();
+
         startActivityForResult(intent,1);
 
     }

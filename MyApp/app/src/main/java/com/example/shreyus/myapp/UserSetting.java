@@ -1,6 +1,8 @@
 package com.example.shreyus.myapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class UserSetting extends AppCompatActivity {
-
+    public static final String PREFS_NAME = "MyContact";
     public static final String person1_id = "person1";
     public static final String person2_id = "person2";
     public static final String person3_id = "person3";
@@ -34,10 +36,15 @@ public class UserSetting extends AppCompatActivity {
         editNum2.setText(num2);
         editNum3.setText(num3);
 
+        SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+        String test = dataSaved.getString(person1_id,null);
+        EditText edittest = findViewById(R.id.test);
+        edittest.setText(test);
 
     }
 
     public void SaveInfo(View view) {
+
         Intent tomainIntent = new Intent(this, MainActivity.class);
 
         EditText editNum1 = findViewById(R.id.editNum1);
