@@ -102,9 +102,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     //User Setting
     //public static final String EXTRA_MSG="com.example.myapp.usersetting";
-    public static final String person1 = "person1";
-    public static final String person2 = "person2";
-    public static final String person3 = "person3";
+    public static final String person1_id = "person1";
+    public static final String person2_id = "person2";
+    public static final String person3_id = "person3";
+    public static int RESULT_UPDATE = 886;
 
     //MQTT
     MqttHelper mqttHelper;
@@ -130,6 +131,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
     String phoneNum1 = "5556", phoneNum2 = "5554", phoneNum3 = "5556";//vm1 5554, vm2 5556
     String message = "Help!";
+    String num1 = phoneNum1;
+    String num2 = phoneNum2;
+    String num3 = phoneNum3;
+
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
     //private EditText num;
     //private EditText content;
@@ -139,6 +144,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         dataReceived = findViewById(R.id.dataReceived);
         startMqtt();
 
@@ -146,10 +153,11 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         requestPermissions();
         locationClient = LocationServices.getFusedLocationProviderClient(this);
         final Button helpButton = findViewById(R.id.HELPbutton);
+
+        /********************************* Help Button Implementation *********************************/
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED )
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions();
                     return;
@@ -191,16 +199,16 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
             }
         });
+        /********************************* End Help Button *********************************/
 
-        //GoogleMap
+        /********************************* Google Map Implementation *********************************/
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //SMS
+        /********************************* SMS Implementation *********************************/
         Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
         Button sendContact2 = (Button) findViewById(R.id.contact2);
         Button sendContact3 = (Button) findViewById(R.id.contact3);
-        //contact1.setOnClickListener(new ButtonClickListener());
 
         sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -222,16 +230,38 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         });
 
     }
-    /********************************************** Function: User setting ******************************************/
+    /********************************************** Implementation: User setting ******************************************/
     public void userSetting(View view){
         Intent intent = new Intent(this, UserSetting.class);
        // EditText editText = findViewById(R.id.testText);
         //String msg = editText.getText().toString();
-        intent.putExtra(person1, phoneNum1);
-        intent.putExtra(person2, phoneNum2);
-        intent.putExtra(person3, phoneNum3);
-        startActivity(intent);
+        intent.putExtra(person1_id, phoneNum1);
+        intent.putExtra(person2_id, phoneNum2);
+        intent.putExtra(person3_id, phoneNum3);
+        startActivityForResult(intent,1);
+
     }
+    //Update User Info
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if(resultCode == RESULT_UPDATE){
+            Toast.makeText(this, "You have successfully updated your contact details", Toast.LENGTH_LONG).show();
+            /******** Edit Update Info*************/
+
+            num1 = data.getStringExtra(MainActivity.person1_id);
+            num2 = data.getStringExtra(MainActivity.person2_id);
+            num3 = data.getStringExtra(MainActivity.person3_id);
+
+            phoneNum1 = num1;
+            phoneNum2 = num2;
+            phoneNum3 = num3;
+
+            /******** End Edit Update Info*************/
+        }
+    }
+
 
     /********************************************** End: User setting ******************************************/
 
@@ -253,7 +283,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         });
     }
     /********************************************** End: MQTT part ******************************************/
-    //Location
+
+    /********************************************** Function: Location Implementation ******************************************/
     private void requestPermissions(){
         ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
     }
