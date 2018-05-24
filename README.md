@@ -1,4 +1,9 @@
 # IBM_Dementia
+*	Ideas:
+	* Alarm when phone and wristband connectivity drops
+	* Battery life warning (under 50%) and automatic HELP when battery at 10% (with battery life as reasoning)
+
+
 *	Wear on wrist
 	* Panic button (sends text message, GPS location, safe places nearby)
 	* Customisable call shortcuts
