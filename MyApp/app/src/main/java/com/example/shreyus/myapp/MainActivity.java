@@ -169,7 +169,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                         double longi = location.getLongitude();
                         if (location != null) {
 
-                            url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
+                            //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
+                            url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
+
                             urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe&key=" + PLACES_API_KEY;
 
                             //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
