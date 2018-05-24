@@ -157,12 +157,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //get phone number from database during activity Create
+        //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
-        String test = dataSaved.getString(person1_id,null);
-        TextView testview = findViewById(R.id.testout);
-        testview.setText(test);
-        Toast.makeText(getApplicationContext(), "Current num1 is: "+test, Toast.LENGTH_LONG).show();
+        phoneNum1 = dataSaved.getString(person1_id,null);
+        phoneNum2 = dataSaved.getString(person2_id,null);
+        phoneNum3 = dataSaved.getString(person3_id,null);
+        Toast.makeText(getApplicationContext(), "Current num1 is: "+phoneNum1 + ", "+phoneNum2+", "+phoneNum1, Toast.LENGTH_LONG).show();
 
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
@@ -254,18 +254,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     /********************************************** Implementation: User setting ******************************************/
     public void userSetting(View view){
         Intent intent = new Intent(this, UserSetting.class);
-        //EditText editText = findViewById(R.id.testText);
-        //String msg = editText.getText().toString();
+
         intent.putExtra(person1_id, phoneNum1);
         intent.putExtra(person2_id, phoneNum2);
         intent.putExtra(person3_id, phoneNum3);
-
-        SharedPreferences savedFile = getSharedPreferences(PREFS_NAME,0);
-        SharedPreferences.Editor editor = savedFile.edit();
-        editor.putString(person1_id,phoneNum1);
-        //editor.putString(person2_id,phoneNum2);
-        //editor.putString(person3_id,phoneNum3);
-        editor.commit();
 
         startActivityForResult(intent,1);
 
@@ -278,14 +270,21 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if(resultCode == RESULT_UPDATE){
             Toast.makeText(this, "You have successfully updated your contact details", Toast.LENGTH_LONG).show();
             /******** Edit Update Info*************/
+//
+//            num1 = data.getStringExtra(MainActivity.person1_id);
+//            num2 = data.getStringExtra(MainActivity.person2_id);
+//            num3 = data.getStringExtra(MainActivity.person3_id);
+//
+//            phoneNum1 = num1;
+//            phoneNum2 = num2;
+//            phoneNum3 = num3;
 
-            num1 = data.getStringExtra(MainActivity.person1_id);
-            num2 = data.getStringExtra(MainActivity.person2_id);
-            num3 = data.getStringExtra(MainActivity.person3_id);
+            //saved to file
+            SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+            phoneNum1 = dataSaved.getString(person1_id,null);
+            phoneNum2 = dataSaved.getString(person2_id,null);
+            phoneNum3 = dataSaved.getString(person3_id,null);
 
-            phoneNum1 = num1;
-            phoneNum2 = num2;
-            phoneNum3 = num3;
 
             /******** End Edit Update Info*************/
         }
