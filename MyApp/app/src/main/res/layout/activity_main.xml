@@ -12,9 +12,9 @@
         style="@android:style/Widget.Material.Button"
         android:layout_width="148dp"
         android:layout_height="79dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="HELP"
-        android:textSize="18sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,10 +24,12 @@
         android:id="@+id/contact1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:text="Contact1"
         app:layout_constraintBaseline_toBaselineOf="@+id/contact2"
+        app:layout_constraintEnd_toStartOf="@+id/contact2"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -41,6 +43,7 @@
         android:text="Contact2"
         app:layout_constraintBaseline_toBaselineOf="@+id/contact3"
         app:layout_constraintEnd_toStartOf="@+id/contact3"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/contact1" />
 
     <Button
@@ -48,11 +51,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="Contact3"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/contact2" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -60,12 +65,12 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/jsonTXT"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,28 +79,32 @@
 
     <TextView
         android:id="@+id/dataReceived"
-        android:layout_width="338dp"
-        android:layout_height="45dp"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:hint="Wristband not connected"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/jsonTXT"
         android:layout_width="351dp"
-        android:layout_height="111dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="135dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toTopOf="@+id/contact2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
