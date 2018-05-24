@@ -10,9 +10,10 @@
         android:id="@+id/HELPbutton"
         android:layout_width="163dp"
         android:layout_height="93dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="28dp"
         android:text="HELP"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dataReceived" />
 
@@ -56,9 +57,8 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="342dp"
         android:layout_height="227dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/HELPbutton"
         tools:context=".MapsActivity" />
@@ -82,8 +82,9 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="36dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.529"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
 
@@ -104,7 +105,7 @@
         android:layout_height="45dp"
         android:layout_marginEnd="96dp"
         android:layout_marginRight="96dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="52dp"
         android:gravity="center"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
