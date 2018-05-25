@@ -156,10 +156,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
-        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-        Toast.makeText(getApplicationContext(), "Current battery life is: "+batLevel + " so you good, bruh.", Toast.LENGTH_LONG).show();
-
+       batteryLife();
 
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
@@ -376,15 +373,15 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if(boolSend1 && (phoneNum1 != null && !phoneNum1.isEmpty())){
             smsManager.sendTextMessage(phoneNum1, null, message, null, null);
             boolSend1 = false;
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
         }else if(boolSend2 && (phoneNum2 != null && !phoneNum2.isEmpty())){
             smsManager.sendTextMessage(phoneNum2, null, message, null, null);
             boolSend2 = false;
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
         }else if(boolSend3 && (phoneNum3 != null && !phoneNum3.isEmpty())){
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
         }else{
 
             if((phoneNum1 != null && !phoneNum1.isEmpty())||
@@ -393,9 +390,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 smsManager.sendTextMessage(phoneNum1, null, url, null, null);
                 smsManager.sendTextMessage(phoneNum2, null, url, null, null);
                 smsManager.sendTextMessage(phoneNum3, null, url, null, null);
-                Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
             }else{
-                Toast.makeText(getApplicationContext(),"Please set your contact number!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Please set your contact number(s)!", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -455,6 +452,25 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             startActivity(mapIntent);
         }
     }
+
+    /********************************************** End Search the nearest safe place  *****************************************/
+
+
+    /********************************************** Function: Search the nearest safe place  ***********************************/
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    void batteryLife(){
+        BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        if(batLevel <=10) {
+            Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
+            sendSMSMessage();
+        }
+        else if(batLevel <=50){
+            Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please charge before leaving.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
 
     /********************************************** End Search the nearest safe place  *****************************************/
 
