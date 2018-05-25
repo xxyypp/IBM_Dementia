@@ -27,6 +27,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.View;
 import android.util.Log;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -191,7 +192,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                             //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
                             url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
-                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe&key=" + PLACES_API_KEY;
+                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe|restaurant|food|drink|police&key=" + PLACES_API_KEY;
 
                             //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
                             sendSMSMessage();
@@ -349,7 +350,14 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},MY_PERMISSION_REQUEST_SEND_SMS);
         } else {
-            SendTextMsg();
+            if((phoneNum1 != null && !phoneNum1.isEmpty())||
+               (phoneNum2 != null && !phoneNum2.isEmpty())||
+               (phoneNum3 != null && !phoneNum3.isEmpty())){
+                SendTextMsg();
+            }else{
+                Toast.makeText(getApplicationContext(),"Please set your contact number!", Toast.LENGTH_LONG).show();
+            }
+
         }
     }
 
@@ -370,23 +378,30 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     private void SendTextMsg() {
         SmsManager smsManager = SmsManager.getDefault();
 
-        if(boolSend1){
+        if(boolSend1 && (phoneNum1 != null && !phoneNum1.isEmpty())){
             smsManager.sendTextMessage(phoneNum1, null, message, null, null);
             boolSend1 = false;
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
-        }else if(boolSend2){
+        }else if(boolSend2 && (phoneNum2 != null && !phoneNum2.isEmpty())){
             smsManager.sendTextMessage(phoneNum2, null, message, null, null);
             boolSend2 = false;
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
-        }else if(boolSend3){
+        }else if(boolSend3 && (phoneNum3 != null && !phoneNum3.isEmpty())){
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
         }else{
-            smsManager.sendTextMessage(phoneNum1, null, url, null, null);
-            smsManager.sendTextMessage(phoneNum2, null, url, null, null);
-            smsManager.sendTextMessage(phoneNum3, null, url, null, null);
-            Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+
+            if((phoneNum1 != null && !phoneNum1.isEmpty())||
+               (phoneNum2 != null && !phoneNum2.isEmpty())||
+               (phoneNum3 != null && !phoneNum3.isEmpty())){
+                smsManager.sendTextMessage(phoneNum1, null, url, null, null);
+                smsManager.sendTextMessage(phoneNum2, null, url, null, null);
+                smsManager.sendTextMessage(phoneNum3, null, url, null, null);
+                Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, the nearest helping point is directing.",Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(getApplicationContext(),"Please set your contact number!", Toast.LENGTH_LONG).show();
+            }
         }
 
         //Default
@@ -403,8 +418,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             JSONArray locationArray = allJSON.getJSONArray("results");
             JSONObject locationObj, geometry, location;
 
-            ArrayList<Locations> al = new ArrayList<Locations>();
-            ArrayList names = new ArrayList();
+            final ArrayList<Locations> al = new ArrayList<Locations>();
+            final ArrayList names = new ArrayList();
+            final ArrayList<ArrayList<String>> destLocation = new ArrayList<ArrayList<String>>();
+            ArrayList<String> arrayDest = new ArrayList<>();
 
             for(int i = 0; i < locationArray.length(); ++i) {
                 locationObj = locationArray.getJSONObject(i);
@@ -415,27 +432,43 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 destName = locationObj.getString("name");
                 al.add(new Locations(destName,destLat, destLongi));
                 names.add(destName);
+
             }
 
+
             /************ Navigation *******************/
-            //destLocation
+            Navigation(al,0);
+            /*//destLocation
             Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(0).getLat()+","+al.get(0).getLongi()+"&mode=w");
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
             if (mapIntent.resolveActivity(getPackageManager()) != null) {
                 startActivity(mapIntent);
-            }
+            }*/
             /******************************************/
 
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
             jsontxt.setAdapter(adapter);
+            jsontxt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                   //Toast.makeText(MainActivity.this, al.get(position).getLat().toString(), Toast.LENGTH_LONG).show();
+                    Navigation(al,position);
+                }
+            });
             Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
-
+    void Navigation(ArrayList<Locations> al,int i){
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+","+al.get(i).getLongi()+"&mode=w");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }
+    }
 
     /********************************************** End Search the nearest safe place  *****************************************/
 
