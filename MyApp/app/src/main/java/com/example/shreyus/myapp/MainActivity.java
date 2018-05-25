@@ -22,7 +22,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
@@ -148,6 +150,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     public static final String PREFS_NAME = "MyContact";
 
     /********************************************** End Pre-define ******************************************/
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,6 +158,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        Toast.makeText(getApplicationContext(), "Current battery life is: "+batLevel + " so you good, bruh.", Toast.LENGTH_LONG).show();
+
 
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
