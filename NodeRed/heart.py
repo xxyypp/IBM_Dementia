@@ -100,4 +100,3 @@ if __name__ == '__main__':
             print "no beats found"
 
         time.sleep(0.005)
-
