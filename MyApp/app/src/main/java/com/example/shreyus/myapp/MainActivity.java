@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
@@ -125,8 +126,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     //JSON closest location
     ListView jsontxt;
-    String url;
-    String urljson;
+    String url, urljson;
     String destLat = "123";
     String destLongi = "456";
     String destName = "A safe space";
@@ -134,8 +134,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     //SMS
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
+
     //For sending sms
-    //String phoneNum1 = "5556", phoneNum2 = "5554", phoneNum3 = "5556";//vm1 5554, vm2 5556
     String phoneNum1 , phoneNum2 , phoneNum3;//vm1 5554, vm2 5556
     String message = "Help!";
     String num1 = phoneNum1;
@@ -143,20 +143,18 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     String num3 = phoneNum3;
 
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
-    //private EditText num;
-    //private EditText content;
 
     //For saving data after closing
     public static final String PREFS_NAME = "MyContact";
-    //SharedPreferences sharedpreferences = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
-    //SharedPreferences.Editor editor = sharedpreferences.edit();
-    //editor.putString(person1_id, num1);
 
     /********************************************** End Pre-define ******************************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
@@ -271,14 +269,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if(resultCode == RESULT_UPDATE){
             Toast.makeText(this, "You have successfully updated your contact details", Toast.LENGTH_LONG).show();
             /******** Edit Update Info*************/
-//
-//            num1 = data.getStringExtra(MainActivity.person1_id);
-//            num2 = data.getStringExtra(MainActivity.person2_id);
-//            num3 = data.getStringExtra(MainActivity.person3_id);
-//
-//            phoneNum1 = num1;
-//            phoneNum2 = num2;
-//            phoneNum3 = num3;
 
             //saved to file
             SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
@@ -434,17 +424,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 names.add(destName);
 
             }
-
-
             /************ Navigation *******************/
             Navigation(al,0);
-            /*//destLocation
-            Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(0).getLat()+","+al.get(0).getLongi()+"&mode=w");
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps");
-            if (mapIntent.resolveActivity(getPackageManager()) != null) {
-                startActivity(mapIntent);
-            }*/
             /******************************************/
 
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
