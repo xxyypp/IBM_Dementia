@@ -161,7 +161,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         phoneNum1 = dataSaved.getString(person1_id,null);
         phoneNum2 = dataSaved.getString(person2_id,null);
         phoneNum3 = dataSaved.getString(person3_id,null);
-        Toast.makeText(getApplicationContext(), "Current num1 is: "+phoneNum1 + ", "+phoneNum2+", "+phoneNum1, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
 
 
 
@@ -174,7 +174,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         locationClient = LocationServices.getFusedLocationProviderClient(this);
         final Button helpButton = findViewById(R.id.HELPbutton);
 
-        //Warn if battery level low, send HELP signal if battery below 10%
+        //Warn if battery level low, send HELP signal if battery below 15%
         batteryLife();
 
 
@@ -209,7 +209,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                             @Override
                             public void onResponse(String string) {
                                 parseJsonData(string);
-
                             }
                         }, new Response.ErrorListener() {
                             @Override
@@ -222,7 +221,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
                     }
                 });
-
             }
         });
         /********************************* End Help Button *********************************/
@@ -386,18 +384,23 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
-
-        }else{
-            if ((phoneNum1 != null && !phoneNum1.isEmpty())) {
+        }else if((boolSend1 && (phoneNum1 == null || phoneNum1.isEmpty())) || (boolSend2 && (phoneNum2 == null || phoneNum2.isEmpty())) || (boolSend3 && (phoneNum3 == null || phoneNum3.isEmpty()))) {
+            Toast.makeText(getApplicationContext(),"Please set this contact number!", Toast.LENGTH_LONG).show();
+            boolSend1=false;
+            boolSend2=false;
+            boolSend3=false;
+        }
+        else{
+            if ((phoneNum1 != null && !phoneNum1.isEmpty()) && phoneNum1 !="") {
                 smsManager.sendTextMessage(phoneNum1, null, url, null, null);
             }
-            if ((phoneNum2 != null && !phoneNum2.isEmpty())) {
+            if ((phoneNum2 != null && !phoneNum2.isEmpty()) && phoneNum2 !="") {
                 smsManager.sendTextMessage(phoneNum2, null, url, null, null);
             }
-            if ((phoneNum3 != null && !phoneNum3.isEmpty())) {
+            if ((phoneNum3 != null && !phoneNum3.isEmpty()) && phoneNum3 !="") {
                 smsManager.sendTextMessage(phoneNum3, null, url, null, null);
             }
-            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, HELP is coming.",Toast.LENGTH_LONG).show();
         }
 
         //Default
@@ -467,15 +470,34 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         if(batLevel <=20) {
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
-            sendSMSMessage();
+            foo();
         }
         else if(batLevel <=50){
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please charge before leaving.", Toast.LENGTH_LONG).show();
         }
     }
 
-
-
     /********************************************** End Search the nearest safe place  *****************************************/
+ void foo(){
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions();
+            return;
+        }
+        locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                double lat = location.getLatitude();
+                double longi = location.getLongitude();
+                if (location != null) {
 
+                    //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
+                    url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
+
+                    sendSMSMessage();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
 }
