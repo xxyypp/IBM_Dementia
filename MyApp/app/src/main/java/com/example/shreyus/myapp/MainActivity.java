@@ -470,7 +470,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         if(batLevel <=20) {
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
-            foo();
+            getLocationSMS();
         }
         else if(batLevel <=50){
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please charge before leaving.", Toast.LENGTH_LONG).show();
@@ -478,7 +478,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     }
 
     /********************************************** End Search the nearest safe place  *****************************************/
- void foo(){
+ void getLocationSMS(){
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
             return;
@@ -490,7 +490,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 double longi = location.getLongitude();
                 if (location != null) {
 
-                    //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
                     url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
                     sendSMSMessage();
