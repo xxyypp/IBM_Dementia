@@ -156,14 +156,14 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       batteryLife();
-
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
         phoneNum1 = dataSaved.getString(person1_id,null);
         phoneNum2 = dataSaved.getString(person2_id,null);
         phoneNum3 = dataSaved.getString(person3_id,null);
         Toast.makeText(getApplicationContext(), "Current num1 is: "+phoneNum1 + ", "+phoneNum2+", "+phoneNum1, Toast.LENGTH_LONG).show();
+
+
 
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
@@ -173,6 +173,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         requestPermissions();
         locationClient = LocationServices.getFusedLocationProviderClient(this);
         final Button helpButton = findViewById(R.id.HELPbutton);
+
+        //Warn if battery level low, send HELP signal if battery below 10%
+        batteryLife();
+
 
         /********************************* Help Button Implementation *********************************/
         helpButton.setOnClickListener(new View.OnClickListener() {
@@ -347,7 +351,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                (phoneNum3 != null && !phoneNum3.isEmpty())){
                 SendTextMsg();
             }else{
-                Toast.makeText(getApplicationContext(),"Please set your contact number!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Please set your contact number(s)!", Toast.LENGTH_LONG).show();
             }
 
         }
@@ -382,18 +386,18 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
-        }else{
 
-            if((phoneNum1 != null && !phoneNum1.isEmpty())||
-               (phoneNum2 != null && !phoneNum2.isEmpty())||
-               (phoneNum3 != null && !phoneNum3.isEmpty())){
+        }else{
+            if ((phoneNum1 != null && !phoneNum1.isEmpty())) {
                 smsManager.sendTextMessage(phoneNum1, null, url, null, null);
-                smsManager.sendTextMessage(phoneNum2, null, url, null, null);
-                smsManager.sendTextMessage(phoneNum3, null, url, null, null);
-                Toast.makeText(getApplicationContext(), "Current location has sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getApplicationContext(),"Please set your contact number(s)!", Toast.LENGTH_LONG).show();
             }
+            if ((phoneNum2 != null && !phoneNum2.isEmpty())) {
+                smsManager.sendTextMessage(phoneNum2, null, url, null, null);
+            }
+            if ((phoneNum3 != null && !phoneNum3.isEmpty())) {
+                smsManager.sendTextMessage(phoneNum3, null, url, null, null);
+            }
+            Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
         }
 
         //Default
@@ -461,7 +465,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     void batteryLife(){
         BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-        if(batLevel <=10) {
+        if(batLevel <=20) {
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
             sendSMSMessage();
         }
