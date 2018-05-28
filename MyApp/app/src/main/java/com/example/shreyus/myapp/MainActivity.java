@@ -15,11 +15,13 @@ import java.util.ArrayList;
 
 //SMS import
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -46,6 +48,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -57,6 +60,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -75,6 +79,7 @@ import org.json.JSONObject;
 import helpers.MqttHelper;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 class Locations {
     private String name;
@@ -171,7 +176,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         //Current Location
         requestPermissions();
-        locationClient = LocationServices.getFusedLocationProviderClient(this);
+        locationClient = getFusedLocationProviderClient(this);
+
         final Button helpButton = findViewById(R.id.HELPbutton);
 
         //Warn if battery level low, send HELP signal if battery below 15%
@@ -322,7 +328,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
-            //Location loc = locationClient.getLastLocation().getResult();
+            LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.5f), 4000, null);
+
         }
     }
 
