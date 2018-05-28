@@ -322,6 +322,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
+            //Location loc = locationClient.getLastLocation().getResult();
         }
     }
 
