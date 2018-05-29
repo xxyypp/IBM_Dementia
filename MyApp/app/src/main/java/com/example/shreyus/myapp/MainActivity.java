@@ -117,6 +117,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     public static final String person1_id = "person1";
     public static final String person2_id = "person2";
     public static final String person3_id = "person3";
+    public static final String person1_name= "person1_name";
+    public static final String person2_name = "person2_name";
+    public static final String person3_name = "person3_name";
     public static int RESULT_UPDATE = 886;
 
     //MQTT
@@ -144,10 +147,11 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     //For sending sms
     String phoneNum1 , phoneNum2 , phoneNum3;//vm1 5554, vm2 5556
+    String personName1,personName2,personName3;
     String message = "Help!";
-    String num1 = phoneNum1;
-    String num2 = phoneNum2;
-    String num3 = phoneNum3;
+//    String num1 = phoneNum1;
+//    String num2 = phoneNum2;
+//    String num3 = phoneNum3;
 
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
 
@@ -161,14 +165,33 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
+        Button sendContact2 = (Button) findViewById(R.id.contact2);
+        Button sendContact3 = (Button) findViewById(R.id.contact3);
+
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
         phoneNum1 = dataSaved.getString(person1_id,null);
         phoneNum2 = dataSaved.getString(person2_id,null);
         phoneNum3 = dataSaved.getString(person3_id,null);
+        personName1 = dataSaved.getString(person1_name,null);
+        personName2 = dataSaved.getString(person2_name,null);
+        personName3 = dataSaved.getString(person3_name,null);
+
+        if((personName1 != null && !personName1.isEmpty())||
+           (personName2 != null && !personName2.isEmpty())||
+           (personName3 != null && !personName3.isEmpty())){
+            sendContact1.setText(personName1);
+            sendContact2.setText(personName2);
+            sendContact3.setText(personName3);
+        }else{
+            sendContact1.setText("Contact 1");
+            sendContact2.setText("Contact 2");
+            sendContact3.setText("Contact 3");
+        }
+
+
         Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
-
-
 
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
@@ -236,9 +259,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         mapFragment.getMapAsync(this);
 
         /********************************* SMS Implementation *********************************/
-        Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
-        Button sendContact2 = (Button) findViewById(R.id.contact2);
-        Button sendContact3 = (Button) findViewById(R.id.contact3);
+
 
         sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -285,7 +306,25 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             phoneNum1 = dataSaved.getString(person1_id,null);
             phoneNum2 = dataSaved.getString(person2_id,null);
             phoneNum3 = dataSaved.getString(person3_id,null);
+            personName1 = dataSaved.getString(person1_name,null);
+            personName2 = dataSaved.getString(person2_name,null);
+            personName3 = dataSaved.getString(person3_name,null);
 
+            Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
+            Button sendContact2 = (Button) findViewById(R.id.contact2);
+            Button sendContact3 = (Button) findViewById(R.id.contact3);
+
+            if((personName1 != null && !personName1.isEmpty())||
+               (personName2 != null && !personName2.isEmpty())||
+               (personName3 != null && !personName3.isEmpty())){
+                sendContact1.setText(personName1);
+                sendContact2.setText(personName2);
+                sendContact3.setText(personName3);
+            }else{
+                sendContact1.setText("Contact 1");
+                sendContact2.setText("Contact 2");
+                sendContact3.setText("Contact 3");
+            }
 
             /******** End Edit Update Info*************/
         }

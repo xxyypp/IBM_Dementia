@@ -38,38 +38,38 @@
         app:layout_constraintStart_toEndOf="@+id/person1"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <EditText
         android:id="@+id/person1"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="44dp"
         android:text="Person1_num"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintHorizontal_bias="0.116"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Person1_num" />
 
-    <TextView
+    <EditText
         android:id="@+id/person2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="184dp"
+        android:layout_marginTop="176dp"
         android:text="Person2_num"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintHorizontal_bias="0.116"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Person2_num" />
 
-    <TextView
+    <EditText
         android:id="@+id/person3"
-        android:layout_width="92dp"
-        android:layout_height="21dp"
-        android:layout_marginTop="312dp"
-        android:text="Person3_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="292dp"
+        android:text="Person2_num"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintHorizontal_bias="0.116"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Person3_num" />
