@@ -1,5 +1,7 @@
 package com.example.shreyus.myapp;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
@@ -21,14 +23,19 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.View;
 import android.util.Log;
@@ -36,6 +43,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -121,6 +129,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     public static final String person2_name = "person2_name";
     public static final String person3_name = "person3_name";
     public static int RESULT_UPDATE = 886;
+    public static final String person1_img= "person1_img";
+    public static final String person2_img= "person2_img";
+    public static final String person3_img= "person3_img";
+    ImageView imageView;
 
     //MQTT
     MqttHelper mqttHelper;
@@ -158,6 +170,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     //For saving data after closing
     public static final String PREFS_NAME = "MyContact";
 
+
+
     /********************************************** End Pre-define ******************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -171,6 +185,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+        UpdateImage(dataSaved,person1_img,sendContact1);
+        UpdateImage(dataSaved,person2_img,sendContact2);
+        UpdateImage(dataSaved,person3_img,sendContact3);
+
         phoneNum1 = dataSaved.getString(person1_id,null);
         phoneNum2 = dataSaved.getString(person2_id,null);
         phoneNum3 = dataSaved.getString(person3_id,null);
@@ -178,18 +196,33 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         personName2 = dataSaved.getString(person2_name,null);
         personName3 = dataSaved.getString(person3_name,null);
 
-        if((personName1 != null && !personName1.isEmpty())||
-           (personName2 != null && !personName2.isEmpty())||
-           (personName3 != null && !personName3.isEmpty())){
+        if(personName1 != null && !personName1.isEmpty()){
             sendContact1.setText(personName1);
-            sendContact2.setText(personName2);
-            sendContact3.setText(personName3);
         }else{
             sendContact1.setText("Contact 1");
-            sendContact2.setText("Contact 2");
-            sendContact3.setText("Contact 3");
+        }
+        if(personName2 != null && !personName2.isEmpty()){
+            sendContact2.setText(personName2);
+        }else{
+            sendContact1.setText("Contact 2");
+        }
+        if(personName3 != null && !personName3.isEmpty()){
+            sendContact3.setText(personName3);
+        }else{
+            sendContact1.setText("Contact 3");
         }
 
+//        if((personName1 != null && !personName1.isEmpty())||
+//           (personName2 != null && !personName2.isEmpty())||
+//           (personName3 != null && !personName3.isEmpty())){
+//            sendContact1.setText(personName1);
+//            sendContact2.setText(personName2);
+//            sendContact3.setText(personName3);
+//        }else{
+//            sendContact1.setText("Contact 1");
+//            sendContact2.setText("Contact 2");
+//            sendContact3.setText("Contact 3");
+//        }
 
         Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
 
@@ -293,6 +326,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     }
     //Update User Info
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
@@ -301,18 +335,29 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             Toast.makeText(this, "You have successfully updated your contact details", Toast.LENGTH_LONG).show();
             /******** Edit Update Info*************/
 
-            //saved to file
             SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+            Button sendContact1 = findViewById(R.id.contact1);//click button 1 action:
+            Button sendContact2 = findViewById(R.id.contact2);
+            Button sendContact3 = findViewById(R.id.contact3);
+
+            //Update Image
+
+            UpdateImage(dataSaved, person1_img, sendContact1);
+            sendContact1.setText("");
+            UpdateImage(dataSaved, person2_img, sendContact2);
+            UpdateImage(dataSaved, person3_img, sendContact3);
+
+            //Update phone Number
             phoneNum1 = dataSaved.getString(person1_id,null);
             phoneNum2 = dataSaved.getString(person2_id,null);
             phoneNum3 = dataSaved.getString(person3_id,null);
+
+            //Update Person Name
             personName1 = dataSaved.getString(person1_name,null);
             personName2 = dataSaved.getString(person2_name,null);
             personName3 = dataSaved.getString(person3_name,null);
 
-            Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
-            Button sendContact2 = (Button) findViewById(R.id.contact2);
-            Button sendContact3 = (Button) findViewById(R.id.contact3);
+
 
             if((personName1 != null && !personName1.isEmpty())||
                (personName2 != null && !personName2.isEmpty())||
@@ -329,7 +374,21 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             /******** End Edit Update Info*************/
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    void UpdateImage(SharedPreferences dataSaved, String person, Button sendContact){
+        String bitmapFromSetting = dataSaved.getString(person,null);
+        Bitmap bitmap = decodeBase64(bitmapFromSetting);
+        //img.setImageBitmap(bitmap);
+        BitmapDrawable bdrawable = new BitmapDrawable(getResources(),bitmap);
+        sendContact.setBackground(bdrawable);
 
+    }
+
+    // Decode image string base64 to bitmap
+    public static Bitmap decodeBase64(String input) {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
 
     /********************************************** End: User setting ******************************************/
 

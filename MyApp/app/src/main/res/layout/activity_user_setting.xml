@@ -8,85 +8,90 @@
 
     <EditText
         android:id="@+id/editNum2"
-        android:layout_width="195dp"
-        android:layout_height="39dp"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="184dp"
+        android:layout_marginTop="164dp"
         android:ems="10"
+        android:hint="Contact Num"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.056"
         app:layout_constraintStart_toEndOf="@+id/person1"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editNum3"
-        android:layout_width="195dp"
-        android:layout_height="39dp"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="272dp"
         android:ems="10"
+        android:hint="Contact Num"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.056"
         app:layout_constraintStart_toEndOf="@+id/person1"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/person1"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="44dp"
-        android:text="Person1_num"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="36dp"
+        android:hint="Person1"
+        android:text="Person1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Person1_num" />
+        tools:text="Person1" />
 
     <EditText
         android:id="@+id/person2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="176dp"
-        android:text="Person2_num"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="156dp"
+        android:hint="Person2"
+        android:text="Person2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Person2_num" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/person3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="292dp"
-        android:text="Person2_num"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="264dp"
+        android:hint="Person3"
+        android:text="Person3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Person3_num" />
+        tools:text="Person3" />
 
     <EditText
         android:id="@+id/editNum1"
-        android:layout_width="195dp"
-        android:layout_height="39dp"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="44dp"
         android:ems="10"
+        android:hint="Contact Num"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.056"
         app:layout_constraintStart_toEndOf="@+id/person1"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -100,5 +105,71 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView_3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="304dp"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="272dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <Button
+        android:id="@+id/btnSetImg_1"
+        android:layout_width="120dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="260dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="88dp"
+        android:text="Update Img"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnSetImg_2"
+        android:layout_width="120dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="264dp"
+        android:layout_marginStart="264dp"
+        android:layout_marginTop="204dp"
+        android:text=" Update Img"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnSetImg_3"
+        android:layout_width="120dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="264dp"
+        android:layout_marginStart="264dp"
+        android:layout_marginTop="336dp"
+        android:text="Update Img"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView_1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="304dp"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="36dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <ImageView
+        android:id="@+id/imageView_2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="304dp"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="152dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_round" />
 
 </android.support.constraint.ConstraintLayout>
