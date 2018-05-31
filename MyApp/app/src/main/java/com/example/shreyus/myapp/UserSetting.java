@@ -157,11 +157,28 @@ public class UserSetting extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
 
+
         if(requestCode == SELECT_IMG_1 && resultCode == RESULT_OK  && data != null && data.getData() != null){
             Uri uri = data.getData();
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                setImage(imageView1,bitmap,person1_img);
+
+//                int maxSize = 960;
+//                int outWidth;
+//                int outHeight;
+//                int inWidth = bitmap.getWidth();
+//                int inHeight = bitmap.getHeight();
+//                if(inWidth > inHeight){
+//                    outWidth = maxSize;
+//                    outHeight = (inHeight * maxSize) / inWidth;
+//                } else {
+//                    outHeight = maxSize;
+//                    outWidth = (inWidth * maxSize) / inHeight;
+//                }
+//
+//                Bitmap compressedBitmap = Bitmap.createScaledBitmap(bitmap,outWidth,outHeight,false);
+                Bitmap compressedBitmap = resize(bitmap);
+                setImage(imageView1,compressedBitmap,person1_img);
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -171,7 +188,8 @@ public class UserSetting extends AppCompatActivity {
             Uri uri = data.getData();
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                setImage(imageView2,bitmap,person2_img);
+                Bitmap compressedBitmap = resize(bitmap);
+                setImage(imageView2,compressedBitmap,person2_img);
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -181,7 +199,8 @@ public class UserSetting extends AppCompatActivity {
             Uri uri = data.getData();
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                setImage(imageView3,bitmap,person3_img);
+                Bitmap compressedBitmap = resize(bitmap);
+                setImage(imageView3,compressedBitmap,person3_img);
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -221,6 +240,24 @@ public class UserSetting extends AppCompatActivity {
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
+
+    public static Bitmap resize(Bitmap bitmap){
+        int maxSize = 960;
+        int outWidth;
+        int outHeight;
+        int inWidth = bitmap.getWidth();
+        int inHeight = bitmap.getHeight();
+        if(inWidth > inHeight){
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+        Bitmap compressedBitmap = Bitmap.createScaledBitmap(bitmap,outWidth,outHeight,false);
+
+        return compressedBitmap;
     }
 
 }

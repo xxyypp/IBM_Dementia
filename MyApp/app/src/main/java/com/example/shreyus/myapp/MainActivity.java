@@ -403,7 +403,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     /********************************************** End: User setting ******************************************/
 
-    /********************************************** Function: MQTT part ******************************************/
+    /********************************************** Function: MQTT part ****************************************/
     private void startMqtt(){
         mqttHelper = new MqttHelper(getApplicationContext());
         mqttHelper.setCallback(new MqttCallbackExtended(){
