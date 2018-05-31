@@ -199,9 +199,12 @@ public class UserSetting extends AppCompatActivity {
     }
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void UpdateImage(SharedPreferences dataSaved, String person, ImageView img){
-        String bitmapFromSetting = dataSaved.getString(person,null);
-        Bitmap bitmap = decodeBase64(bitmapFromSetting);
-        img.setImageBitmap(bitmap);
+
+        String bitmapFromSetting = dataSaved.getString(person, null);
+        if(bitmapFromSetting!=null && !bitmapFromSetting.isEmpty()) {
+            Bitmap bitmap = decodeBase64(bitmapFromSetting);
+            img.setImageBitmap(bitmap);
+        }
     }
     //Image encoding
     public static String encodeTobase64(Bitmap image) {

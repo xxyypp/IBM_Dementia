@@ -377,10 +377,13 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void UpdateImage(SharedPreferences dataSaved, String person, Button sendContact){
         String bitmapFromSetting = dataSaved.getString(person,null);
-        Bitmap bitmap = decodeBase64(bitmapFromSetting);
-        //img.setImageBitmap(bitmap);
-        BitmapDrawable bdrawable = new BitmapDrawable(getResources(),bitmap);
-        sendContact.setBackground(bdrawable);
+        if(bitmapFromSetting!=null && !bitmapFromSetting.isEmpty()){
+            Bitmap bitmap = decodeBase64(bitmapFromSetting);
+            //img.setImageBitmap(bitmap);
+            BitmapDrawable bdrawable = new BitmapDrawable(getResources(),bitmap);
+            sendContact.setBackground(bdrawable);
+        }
+
 
     }
 
