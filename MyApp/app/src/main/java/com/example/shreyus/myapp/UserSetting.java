@@ -1,10 +1,15 @@
 package com.example.shreyus.myapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -17,10 +22,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class UserSetting extends AppCompatActivity {
     public static final String PREFS_NAME = "MyContact";
@@ -157,27 +164,12 @@ public class UserSetting extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
 
-
         if(requestCode == SELECT_IMG_1 && resultCode == RESULT_OK  && data != null && data.getData() != null){
             Uri uri = data.getData();
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-
-//                int maxSize = 960;
-//                int outWidth;
-//                int outHeight;
-//                int inWidth = bitmap.getWidth();
-//                int inHeight = bitmap.getHeight();
-//                if(inWidth > inHeight){
-//                    outWidth = maxSize;
-//                    outHeight = (inHeight * maxSize) / inWidth;
-//                } else {
-//                    outHeight = maxSize;
-//                    outWidth = (inWidth * maxSize) / inHeight;
-//                }
-//
-//                Bitmap compressedBitmap = Bitmap.createScaledBitmap(bitmap,outWidth,outHeight,false);
-                Bitmap compressedBitmap = resize(bitmap);
+                //Bitmap compressedBitmap = resize(uri,bitmap);
+                Bitmap compressedBitmap = scaleDownAndRotatePic(uri,bitmap);
                 setImage(imageView1,compressedBitmap,person1_img);
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -188,7 +180,7 @@ public class UserSetting extends AppCompatActivity {
             Uri uri = data.getData();
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                Bitmap compressedBitmap = resize(bitmap);
+                Bitmap compressedBitmap = resize(uri,bitmap);
                 setImage(imageView2,compressedBitmap,person2_img);
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -199,7 +191,7 @@ public class UserSetting extends AppCompatActivity {
             Uri uri = data.getData();
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                Bitmap compressedBitmap = resize(bitmap);
+                Bitmap compressedBitmap = resize(uri,bitmap);
                 setImage(imageView3,compressedBitmap,person3_img);
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -242,7 +234,7 @@ public class UserSetting extends AppCompatActivity {
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
-    public static Bitmap resize(Bitmap bitmap){
+    public static Bitmap resize(Uri uri,Bitmap bitmap){
         int maxSize = 960;
         int outWidth;
         int outHeight;
@@ -255,9 +247,111 @@ public class UserSetting extends AppCompatActivity {
             outHeight = maxSize;
             outWidth = (inWidth * maxSize) / inHeight;
         }
-        Bitmap compressedBitmap = Bitmap.createScaledBitmap(bitmap,outWidth,outHeight,false);
+        Bitmap compressedBitmap = Bitmap.createScaledBitmap(bitmap,outWidth,outHeight,true);
 
         return compressedBitmap;
     }
 
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
+        return 0;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public Bitmap scaleDownAndRotatePic(Uri uri, Bitmap bitmap) {//you can provide file path here
+        int orientation;
+        InputStream in;
+        try {
+
+            Bitmap bm = resize(uri,bitmap);
+            in = getContentResolver().openInputStream(uri);
+            ExifInterface exif = new ExifInterface(in);
+
+            //orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            //Toast.makeText(getApplicationContext(), "Exif orientation: " + orientation,Toast.LENGTH_LONG).show();
+            //Bitmap rotatedBitmap = rotateBitmap(bm, orientation);
+            //Toast.makeText(getApplicationContext(), "Exif rotation: " + exif.toString(),Toast.LENGTH_LONG).show();
+
+            //return bm;
+
+            Log.e("ExifInteface .........", "rotation =" + orientation);
+
+
+            Log.e("orientation", "" + orientation);
+            Matrix m = new Matrix();
+
+            if ((orientation == ExifInterface.ORIENTATION_ROTATE_180)) {
+                m.postRotate(180);
+                //m.postScale((float) bm.getWidth(), (float) bm.getHeight());
+                // if(m.preRotate(90)){
+                Log.e("in orientation", "" + orientation);
+                Toast.makeText(getApplicationContext(), "Exif orientation: " + orientation,Toast.LENGTH_LONG).show();
+                bitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),bm.getHeight(), m, true);
+                return bitmap;
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                m.postRotate(90);
+                Log.e("in orientation", "" + orientation);
+                Toast.makeText(getApplicationContext(), "Exif orientation: " + orientation,Toast.LENGTH_LONG).show();
+                bitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),bm.getHeight(), m, true);
+                return bitmap;
+            }
+            else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                m.postRotate(270);
+                Log.e("in orientation", "" + orientation);
+                Toast.makeText(getApplicationContext(), "Exif orientation: " + orientation,Toast.LENGTH_LONG).show();
+                bitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(),bm.getHeight(), m, true);
+                return bitmap;
+            }
+            return bitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setRotate(180);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+
+            return bmRotated;
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
