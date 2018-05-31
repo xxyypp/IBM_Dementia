@@ -204,25 +204,14 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         if(personName2 != null && !personName2.isEmpty()){
             sendContact2.setText(personName2);
         }else{
-            sendContact1.setText("Contact 2");
+            sendContact2.setText("Contact 2");
         }
         if(personName3 != null && !personName3.isEmpty()){
             sendContact3.setText(personName3);
         }else{
-            sendContact1.setText("Contact 3");
+            sendContact3.setText("Contact 3");
         }
 
-//        if((personName1 != null && !personName1.isEmpty())||
-//           (personName2 != null && !personName2.isEmpty())||
-//           (personName3 != null && !personName3.isEmpty())){
-//            sendContact1.setText(personName1);
-//            sendContact2.setText(personName2);
-//            sendContact3.setText(personName3);
-//        }else{
-//            sendContact1.setText("Contact 1");
-//            sendContact2.setText("Contact 2");
-//            sendContact3.setText("Contact 3");
-//        }
 
         Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
 
@@ -357,19 +346,34 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             personName2 = dataSaved.getString(person2_name,null);
             personName3 = dataSaved.getString(person3_name,null);
 
-
-
-            if((personName1 != null && !personName1.isEmpty())||
-               (personName2 != null && !personName2.isEmpty())||
-               (personName3 != null && !personName3.isEmpty())){
+            if(personName1 != null && !personName1.isEmpty()){
                 sendContact1.setText(personName1);
-                sendContact2.setText(personName2);
-                sendContact3.setText(personName3);
             }else{
                 sendContact1.setText("Contact 1");
+            }
+            if(personName2 != null && !personName2.isEmpty()){
+                sendContact2.setText(personName2);
+            }else{
                 sendContact2.setText("Contact 2");
+            }
+            if(personName3 != null && !personName3.isEmpty()){
+                sendContact3.setText(personName3);
+            }else{
                 sendContact3.setText("Contact 3");
             }
+
+
+//            if((personName1 != null && !personName1.isEmpty())||
+//               (personName2 != null && !personName2.isEmpty())||
+//               (personName3 != null && !personName3.isEmpty())){
+//                sendContact1.setText(personName1);
+//                sendContact2.setText(personName2);
+//                sendContact3.setText(personName3);
+//            }else{
+//                sendContact1.setText("Contact 1");
+//                sendContact2.setText("Contact 2");
+//                sendContact3.setText("Contact 3");
+//            }
 
             /******** End Edit Update Info*************/
         }
