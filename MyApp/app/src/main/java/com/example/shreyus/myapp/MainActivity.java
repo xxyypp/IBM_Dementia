@@ -201,6 +201,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         personName2 = dataSaved.getString(person2_name,null);
         personName3 = dataSaved.getString(person3_name,null);
 
+        jsontxt = findViewById(R.id.jsonTXT);
+        jsontxt.setVisibility(View.GONE);
+
         if(personName1 != null && !personName1.isEmpty()){
             txtContact1.setText(personName1);
         }else{
@@ -259,7 +262,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                             Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                         }
                         /************ Parse Json *******************/
-                        jsontxt = findViewById(R.id.jsonTXT);
+
                         StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
                             @Override
                             public void onResponse(String string) {
@@ -557,6 +560,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             /******************************************/
 
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
+            jsontxt.setVisibility(View.VISIBLE);
             jsontxt.setAdapter(adapter);
             jsontxt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
