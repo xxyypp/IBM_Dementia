@@ -23,10 +23,11 @@
 
     <Button
         android:id="@+id/contact1"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:background="@drawable/circle_btn_background"
         app:layout_constraintBaseline_toBaselineOf="@+id/contact2"
         app:layout_constraintEnd_toStartOf="@+id/contact2"
         app:layout_constraintHorizontal_bias="0.5"
@@ -35,12 +36,13 @@
 
     <Button
         android:id="@+id/contact2"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
+        android:background="@drawable/circle_btn_background"
         app:layout_constraintBaseline_toBaselineOf="@+id/contact3"
         app:layout_constraintEnd_toStartOf="@+id/contact3"
         app:layout_constraintHorizontal_bias="0.5"
@@ -49,10 +51,12 @@
 
     <Button
         android:id="@+id/contact3"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:background="@drawable/circle_btn_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -121,5 +125,43 @@
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtContact1"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="54dp"
+        android:layout_marginStart="54dp"
+        android:gravity="center_horizontal"
+        android:text="Contact 1"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtContact2"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Contact 1" />
+
+    <TextView
+        android:id="@+id/txtContact2"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:text="Contact 2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contact2"
+        tools:text="Contact 2" />
+
+    <TextView
+        android:id="@+id/txtContact3"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="51dp"
+        android:layout_marginRight="51dp"
+        android:gravity="center_horizontal"
+        android:text="Contact 3"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtContact2"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Contact 3" />
 
 </android.support.constraint.ConstraintLayout>

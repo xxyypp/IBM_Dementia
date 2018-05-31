@@ -161,6 +161,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     String phoneNum1 , phoneNum2 , phoneNum3;//vm1 5554, vm2 5556
     String personName1,personName2,personName3;
     String message = "Help!";
+    TextView txtContact1, txtContact2, txtContact3;
+
 //    String num1 = phoneNum1;
 //    String num2 = phoneNum2;
 //    String num3 = phoneNum3;
@@ -182,6 +184,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
         Button sendContact2 = (Button) findViewById(R.id.contact2);
         Button sendContact3 = (Button) findViewById(R.id.contact3);
+        txtContact1 = findViewById(R.id.txtContact1);
+        txtContact2 = findViewById(R.id.txtContact2);
+        txtContact3 = findViewById(R.id.txtContact3);
 
         //Read phone number from database during activity Create
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
@@ -197,21 +202,20 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         personName3 = dataSaved.getString(person3_name,null);
 
         if(personName1 != null && !personName1.isEmpty()){
-            sendContact1.setText(personName1);
+            txtContact1.setText(personName1);
         }else{
-            sendContact1.setText("Contact 1");
+            txtContact1.setText("Contact 1");
         }
         if(personName2 != null && !personName2.isEmpty()){
-            sendContact2.setText(personName2);
+            txtContact2.setText(personName2);
         }else{
-            sendContact2.setText("Contact 2");
+            txtContact2.setText("Contact 2");
         }
         if(personName3 != null && !personName3.isEmpty()){
-            sendContact3.setText(personName3);
+            txtContact3.setText(personName3);
         }else{
-            sendContact3.setText("Contact 3");
+            txtContact3.setText("Contact 3");
         }
-
 
         Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
 
@@ -347,19 +351,19 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             personName3 = dataSaved.getString(person3_name,null);
 
             if(personName1 != null && !personName1.isEmpty()){
-                sendContact1.setText(personName1);
+                txtContact1.setText(personName1);
             }else{
-                sendContact1.setText("Contact 1");
+                txtContact1.setText("Contact 1");
             }
             if(personName2 != null && !personName2.isEmpty()){
-                sendContact2.setText(personName2);
+                txtContact2.setText(personName2);
             }else{
-                sendContact2.setText("Contact 2");
+                txtContact2.setText("Contact 2");
             }
             if(personName3 != null && !personName3.isEmpty()){
-                sendContact3.setText(personName3);
+                txtContact3.setText(personName3);
             }else{
-                sendContact3.setText("Contact 3");
+                txtContact3.setText("Contact 3");
             }
 
 
