@@ -273,14 +273,11 @@ public class UserSetting extends AppCompatActivity {
             orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
             //Toast.makeText(getApplicationContext(), "Exif orientation: " + orientation,Toast.LENGTH_LONG).show();
             //Bitmap rotatedBitmap = rotateBitmap(bm, orientation);
-            //Toast.makeText(getApplicationContext(), "Exif rotation: " + exif.toString(),Toast.LENGTH_LONG).show();
 
             //return bm;
 
             Log.e("ExifInteface .........", "rotation =" + orientation);
 
-
-            Log.e("orientation", "" + orientation);
             Matrix m = new Matrix();
 
             if ((orientation == ExifInterface.ORIENTATION_ROTATE_180)) {
