@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.telephony.SmsManager;
@@ -172,7 +173,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     //For saving data after closing
     public static final String PREFS_NAME = "MyContact";
 
-
+    //Used for vibration function
+    public static Vibrator v;
 
     /********************************************** End Pre-define ******************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -181,6 +183,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Initialise vibrator variable with vibrator_service
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        //Link button variables to buttons in XML layout
         Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
         Button sendContact2 = (Button) findViewById(R.id.contact2);
         Button sendContact3 = (Button) findViewById(R.id.contact3);
@@ -591,17 +597,22 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     void batteryLife(){
         BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        //If battery life is very low, send text message to contacts with location
         if(batLevel <=20) {
+            vibrate();
+            vibrate();
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
             getLocationSMS();
         }
+        //Warn if battery life is half way - user should charge before heading out
         else if(batLevel <=50){
-            Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please charge before leaving.", Toast.LENGTH_LONG).show();
+            vibrate();
+            Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please consider charging before leaving.", Toast.LENGTH_LONG).show();
         }
     }
 
     /********************************************** End Search the nearest safe place  *****************************************/
- void getLocationSMS(){
+    void getLocationSMS(){
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
             return;
@@ -621,5 +632,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 }
             }
         });
+    }
+
+    void vibrate(){
+        long[] pattern = {0,400,400,400,400,600};
+        v.vibrate(pattern, -1);
     }
 }
