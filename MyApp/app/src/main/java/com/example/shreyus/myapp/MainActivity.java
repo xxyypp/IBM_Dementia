@@ -189,7 +189,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         setContentView(R.layout.activity_main);
 
 
-        sendNotification();
+        //sendNotification();
 
 
         //Initialise vibrator variable with vibrator_service
@@ -619,9 +619,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             getLocationSMS();
         }
         //Warn if battery life is half way - user should charge before heading out
-        else if(batLevel <=50){
+        else if(batLevel <=95){
 
-            //sendNotification(batLevel);
+            sendNotification();
 
             vibrate();
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please consider charging before leaving.", Toast.LENGTH_LONG).show();
