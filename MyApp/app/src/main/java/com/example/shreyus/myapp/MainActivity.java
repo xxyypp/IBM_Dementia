@@ -181,11 +181,24 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     //Used for vibration function
     public static Vibrator v;
 
+
     /********************************************** End Pre-define ******************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //retrieve data saved
+        SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+
+        //Check if first time setup
+        if(dataSaved.getString("firstTimeSetup", null)==null){
+            openUserSettings();
+            SharedPreferences.Editor editor = dataSaved.edit();
+            editor.putString("firstTimeSetup", "T");
+            editor.commit();
+        }
+
         setContentView(R.layout.activity_main);
 
 
@@ -205,7 +218,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         txtContact3 = findViewById(R.id.txtContact3);
 
         //Read phone number from database during activity Create
-        SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+
         UpdateImage(dataSaved,person1_img,sendContact1);
         UpdateImage(dataSaved,person2_img,sendContact2);
         UpdateImage(dataSaved,person3_img,sendContact3);
@@ -328,6 +341,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     }
     /********************************************** Implementation: User setting ******************************************/
     public void userSetting(View view){
+        openUserSettings();
+    }
+
+    public void openUserSettings(){
         Intent intent = new Intent(this, UserSetting.class);
 
         intent.putExtra(person1_id, phoneNum1);
@@ -336,11 +353,15 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         startActivityForResult(intent,1);
 
+
     }
+
     //Update User Info
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        recreate();
+
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
         if(resultCode == RESULT_UPDATE){
