@@ -19,7 +19,11 @@ import java.util.ArrayList;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,6 +37,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
@@ -180,6 +185,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sendNotification();
 
         Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
         Button sendContact2 = (Button) findViewById(R.id.contact2);
@@ -590,15 +597,101 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void batteryLife(){
         BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
         if(batLevel <=20) {
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
+            //sendNotification(batLevel);
             getLocationSMS();
         }
         else if(batLevel <=50){
+            //sendNotification(batLevel);
             Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please charge before leaving.", Toast.LENGTH_LONG).show();
         }
     }
+
+    public void sendNotification() {
+
+        // BEGIN_INCLUDE(build_action)
+        /** Create an intent that will be fired when the user clicks the notification.
+         * The intent needs to be packaged into a {@link android.app.PendingIntent} so that the
+         * notification service can fire it on our behalf.
+         */
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://developer.android.com/reference/android/app/Notification.html"));
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        // END_INCLUDE(build_action)
+
+        // BEGIN_INCLUDE (build_notification)
+        /**
+         * Use NotificationCompat.Builder to set up our notification.
+         */
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        /** Set the icon that will appear in the notification bar. This icon also appears
+         * in the lower right hand corner of the notification itself.
+         *
+         * Important note: although you can use any drawable as the small icon, Android
+         * design guidelines state that the icon should be simple and monochrome. Full-color
+         * bitmaps or busy images don't render well on smaller screens and can end up
+         * confusing the user.
+         */
+        builder.setSmallIcon(R.drawable.config_configuration_settings_icon_64);
+
+        // Set the intent that will fire when the user taps the notification.
+        builder.setContentIntent(pendingIntent);
+
+        // Set the notification to auto-cancel. This means that the notification will disappear
+        // after the user taps it, rather than remaining until it's explicitly dismissed.
+        builder.setAutoCancel(true);
+
+        /**
+         *Build the notification's appearance.
+         * Set the large icon, which appears on the left of the notification. In this
+         * sample we'll set the large icon to be the same as our app icon. The app icon is a
+         * reasonable default if you don't have anything more compelling to use as an icon.
+         */
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.config_configuration_settings_icon_64));
+
+        /**
+         * Set the text of the notification. This sample sets the three most commononly used
+         * text areas:
+         * 1. The content title, which appears in large type at the top of the notification
+         * 2. The content text, which appears in smaller text below the title
+         * 3. The subtext, which appears under the text on newer devices. Devices running
+         *    versions of Android prior to 4.2 will ignore this field, so don't use it for
+         *    anything vital!
+         */
+        builder.setContentTitle("BasicNotifications Sample");
+        builder.setContentText("Time to learn about notifications!");
+        builder.setSubText("Tap to view documentation about notifications.");
+
+        // END_INCLUDE (build_notification)
+
+        // BEGIN_INCLUDE(send_notification)
+        /**
+         * Send the notification. This will immediately display the notification icon in the
+         * notification bar.
+         */
+        NotificationManager notificationManager = (NotificationManager) getSystemService(
+                NOTIFICATION_SERVICE);
+        notificationManager.notify(0, builder.build());
+        // END_INCLUDE(send_notification)
+    }
+   /* @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    void sendNotification(int batLevel){
+
+        String title = "Battery";
+        String subject = "Battery Low Level";
+        String body = "Current battery life is: " + batLevel + "Critical Battery Life!";
+        NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notify = new Notification.Builder
+                (getApplicationContext()).setContentText(body).
+                setContentTitle(subject).setSmallIcon(R.drawable.config_configuration_settings_icon_64).build();
+        notify.flags |= Notification.FLAG_AUTO_CANCEL;
+        notif.notify(0, notify);
+    }*/
 
     /********************************************** End Search the nearest safe place  *****************************************/
  void getLocationSMS(){
