@@ -29,7 +29,7 @@ public class MqttHelper {
         final String payload = "Hello from Android";
         byte[] encodedPayload = new byte[0];
 
-        public MqttHelper(Context context){
+        public MqttHelper(Context context, String location){
             mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
                 @Override
@@ -52,14 +52,14 @@ public class MqttHelper {
 
                 }
             });
-            connect();
+            connect(location);
         }
 
         public void setCallback(MqttCallbackExtended callback) {
             mqttAndroidClient.setCallback(callback);
         }
 
-        private void connect(){
+        private void connect(final String location){
             MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setAutomaticReconnect(true);
             mqttConnectOptions.setCleanSession(false);
@@ -79,7 +79,7 @@ public class MqttHelper {
                         disconnectedBufferOptions.setDeleteOldestMessages(false);
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
                         subscribeToTopic();
-                        publishToTopic();
+                        publishToTopic(location);
                     }
 
                     @Override
@@ -94,9 +94,9 @@ public class MqttHelper {
             }
         }
 
-        private void publishToTopic(){
+        private void publishToTopic(String location){
             try {
-                encodedPayload = payload.getBytes("UTF-8");
+                encodedPayload = location.getBytes("UTF-8");
                 MqttMessage message = new MqttMessage(encodedPayload);
                 mqttAndroidClient.publish(topic, message);
             } catch (UnsupportedEncodingException | MqttException e) {

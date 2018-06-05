@@ -147,6 +147,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     public boolean boolList;
     public boolean boolNavigation;
     public boolean boolBattery;
+    public boolean firstTime = true;
+
     Switch switchVibration;
     ImageView imageView;
 
@@ -264,7 +266,10 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
-        startMqtt();
+        if(firstTime) {
+            startMqtt("Hello ", "from Android");
+            firstTime = false;
+        }
 
         //Current Location
         requestPermissions();
@@ -290,7 +295,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                         double lat = location.getLatitude();
                         double longi = location.getLongitude();
                         if (location != null) {
-
+                            startMqtt(Double.toString(lat),Double.toString(longi));
                             //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
                             url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
@@ -464,8 +469,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     /********************************************** End: User setting ******************************************/
 
     /********************************************** Function: MQTT part ****************************************/
-    private void startMqtt(){
-        mqttHelper = new MqttHelper(getApplicationContext());
+    private void startMqtt(String lat, String longi){
+        mqttHelper = new MqttHelper(getApplicationContext(), "lat:"+lat+"\n long:"+longi);
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
             public void connectComplete(boolean b, String s){}
@@ -497,6 +502,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
+            getLocation(mMap);
             //LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             //Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.5f), 4000, null);
@@ -711,6 +717,29 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                     sendSMSMessage();
                 } else {
                     Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    void getLocation(final GoogleMap mMap){
+
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions();
+            return;
+        }
+        locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                double lat = location.getLatitude();
+                double longi = location.getLongitude();
+                if (location != null) {
+
+                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi),8.0f));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi),16.0f));
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Oops, cannot get GPS right now.", Toast.LENGTH_LONG).show();
                 }
             }
         });
