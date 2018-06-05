@@ -51,6 +51,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.ActivityCompat;
@@ -138,6 +139,16 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
     public static final String person1_img= "person1_img";
     public static final String person2_img= "person2_img";
     public static final String person3_img= "person3_img";
+    public static final String VIBRATION = "Vibration";
+    public static final String LIST = "list";
+    public static final String MAP = "googlemap";
+    public static final String BATTERY = "battery";
+
+    public boolean boolVibrate;
+    public boolean boolList;
+    public boolean boolNavigation;
+    public boolean boolBattery;
+    Switch switchVibration;
     ImageView imageView;
 
     //MQTT
@@ -190,6 +201,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         //retrieve data saved
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+        UpdateBooleanUserSetting(dataSaved);
 
         //Check if first time setup
         if(dataSaved.getString("firstTimeSetup", null)==null){
@@ -291,21 +303,22 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                             Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                         }
                         /************ Parse Json *******************/
+                        if(boolList) {
+                            StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String string) {
+                                    parseJsonData(string);
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+                                    Toast.makeText(getApplicationContext(), "Some error occurred!!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
 
-                        StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String string) {
-                                parseJsonData(string);
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
-                                Toast.makeText(getApplicationContext(), "Some error occurred!!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
-                        rQueue.add(request);
-
+                            RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
+                            rQueue.add(request);
+                        }
                     }
                 });
             }
@@ -340,6 +353,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     }
     /********************************************** Implementation: User setting ******************************************/
+    void UpdateBooleanUserSetting(SharedPreferences dataSaved){
+        boolVibrate = dataSaved.getBoolean(VIBRATION, true);
+        boolList = dataSaved.getBoolean(LIST, true);
+        boolNavigation = dataSaved.getBoolean(MAP, true);
+        boolBattery = dataSaved.getBoolean(BATTERY, true);
+    }
     public void userSetting(View view){
         openUserSettings();
     }
@@ -365,10 +384,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
         if(resultCode == RESULT_UPDATE){
+
             Toast.makeText(this, "You have successfully updated your contact details", Toast.LENGTH_LONG).show();
             /******** Edit Update Info*************/
 
             SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+            UpdateBooleanUserSetting(dataSaved);
             Button sendContact1 = findViewById(R.id.contact1);//click button 1 action:
             Button sendContact2 = findViewById(R.id.contact2);
             Button sendContact3 = findViewById(R.id.contact3);
@@ -593,7 +614,9 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
             }
             /************ Navigation *******************/
-            Navigation(al,0);
+            if(boolNavigation){
+                Navigation(al,0);
+            }
             /******************************************/
 
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
@@ -633,9 +656,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         //If battery life is very low, send text message to contacts with location
 
         if(batLevel <=20) {
-            vibrate();
-            vibrate();
-            Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
+            if(boolVibrate){
+                vibrate();
+            }
+            if(boolBattery) {
+                Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
+            }
             //sendNotification(batLevel);
             getLocationSMS();
         }
@@ -645,8 +671,12 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             //sendNotification();
             sendNotification(batLevel);
 
-            vibrate();
-            Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please consider charging before leaving.", Toast.LENGTH_LONG).show();
+            if(boolVibrate){
+                vibrate();
+            }
+            if(boolBattery){
+                Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Please consider charging before leaving.", Toast.LENGTH_LONG).show();
+            }
 
         }
     }

@@ -20,8 +20,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -45,8 +47,15 @@ public class UserSetting extends AppCompatActivity {
     public static final String person1_img= "person1_img";
     public static final String person2_img= "person2_img";
     public static final String person3_img= "person3_img";
+
+    public static final String VIBRATION = "Vibration";
+    public static final String LIST = "list";
+    public static final String MAP = "googlemap";
+    public static final String BATTERY = "battery";
+
     Button selectImg1,selectImg2,selectImg3;
     ImageView imageView1,imageView2,imageView3;
+    Switch switchVibration,switchList,switchNavigation,switchBattery;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -56,6 +65,7 @@ public class UserSetting extends AppCompatActivity {
 
         //Intent intent = getIntent();
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
+        final SharedPreferences.Editor editor = dataSaved.edit();
 
         /******** Select Image *********/
         selectImg1 = findViewById(R.id.btnSetImg_1);
@@ -65,6 +75,11 @@ public class UserSetting extends AppCompatActivity {
         imageView1 = findViewById(R.id.imageView_1);
         imageView2 = findViewById(R.id.imageView_2);
         imageView3 = findViewById(R.id.imageView_3);
+
+        switchVibration = findViewById(R.id.switchVibrate);
+        switchList = findViewById(R.id.switchList);
+        switchNavigation = findViewById(R.id.switchNavigation);
+        switchBattery = findViewById(R.id.switchBattery);
 
         selectImg1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +109,20 @@ public class UserSetting extends AppCompatActivity {
             }
         });
         /******** End Select Image Intent *********/
+
+        /********* Update Switch Info ********************/
+        /*switchVibration.setChecked(dataSaved.getBoolean(VIBRATION, true));
+        switchVibration.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean(VIBRATION,isChecked);
+                editor.commit();
+            }
+        });*/
+        UpdateSwitchInfo(dataSaved,switchVibration,VIBRATION, editor);
+        UpdateSwitchInfo(dataSaved,switchList,LIST, editor);
+        UpdateSwitchInfo(dataSaved,switchBattery,BATTERY, editor);
+        UpdateSwitchInfo(dataSaved,switchNavigation,MAP, editor);
 
         /******* Update Image *********/
         UpdateImage(dataSaved,person1_img,imageView1);
@@ -159,6 +188,18 @@ public class UserSetting extends AppCompatActivity {
         finish();
 
     }
+    /********** Get switch info *******************/
+    void UpdateSwitchInfo(SharedPreferences dataSaved, Switch switch_, final String tuple_name, final SharedPreferences.Editor editor){
+        switch_.setChecked(dataSaved.getBoolean(tuple_name, true));
+        switch_.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean(tuple_name,isChecked);
+                editor.commit();
+            }
+        });
+    }
+
 
     /******** Intent result from Photo Gallery ********************/
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -252,12 +293,12 @@ public class UserSetting extends AppCompatActivity {
         return compressedBitmap;
     }
 
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
-        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
-        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
-        return 0;
-    }
+//    private static int exifToDegrees(int exifOrientation) {
+//        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
+//        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
+//        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
+//        return 0;
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public Bitmap scaleDownAndRotatePic(Uri uri, Bitmap bitmap) {//you can provide file path here
@@ -309,7 +350,7 @@ public class UserSetting extends AppCompatActivity {
         }
     }
 
-    private static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+    /*private static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_NORMAL:
@@ -350,5 +391,5 @@ public class UserSetting extends AppCompatActivity {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 }
