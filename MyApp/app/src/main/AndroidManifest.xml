@@ -48,6 +48,9 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <receiver
+            android:name=".OnAlarmReceive" />
+
     </application>
 
 </manifest>

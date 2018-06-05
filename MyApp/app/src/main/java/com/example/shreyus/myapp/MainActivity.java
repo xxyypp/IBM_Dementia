@@ -71,7 +71,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -261,7 +260,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             txtContact3.setText("Contact 3");
         }
 
-        Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
 
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
@@ -312,7 +311,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                             }, new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError volleyError) {
-                                    Toast.makeText(getApplicationContext(), "Some error occurred!!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Some error occurred when requesting nearest locations!", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
@@ -512,7 +511,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
@@ -542,7 +541,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     SendTextMsg();
                 } else {
-                    Toast.makeText(getApplicationContext(),"SMS failed, please try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"SMS failed, please allow permission and try again.", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -629,7 +628,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
                     Navigation(al,position);
                 }
             });
-            Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -665,8 +664,8 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             //sendNotification(batLevel);
             getLocationSMS();
         }
-        //Warn if battery life is half way - user should charge before heading out
-        else if(batLevel <=95){
+        //Warn if battery life is getting low - user should charge before heading out
+        else if(batLevel <=50){
 
             //sendNotification();
             sendNotification(batLevel);
