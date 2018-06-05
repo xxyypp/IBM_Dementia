@@ -656,7 +656,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         //If battery life is very low, send text message to contacts with location
 
         if(batLevel <=20) {
-            if(boolVibrate){
+            if(boolVibrate && boolBattery){
                 vibrate();
             }
             if(boolBattery) {
@@ -671,7 +671,7 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             //sendNotification();
             sendNotification(batLevel);
 
-            if(boolVibrate){
+            if(boolVibrate && boolBattery){
                 vibrate();
             }
             if(boolBattery){
@@ -681,33 +681,6 @@ public class MainActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         }
     }
 
-   /* public void sendNotification() {
-        Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://developer.android.com/reference/android/app/Notification.html"));
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-
-        builder.setSmallIcon(R.drawable.config_configuration_settings_icon_64);
-
-        // Set the intent that will fire when the user taps the notification.
-        builder.setContentIntent(pendingIntent);
-
-        // Set the notification to auto-cancel. This means that the notification will disappear
-        // after the user taps it, rather than remaining until it's explicitly dismissed.
-        builder.setAutoCancel(true);
-
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.config_configuration_settings_icon_64));
-
-        builder.setContentTitle("BasicNotifications Sample");
-        builder.setContentText("Time to learn about notifications!");
-        builder.setSubText("Tap to view documentation about notifications.");
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(
-                NOTIFICATION_SERVICE);
-        notificationManager.notify(0, builder.build());
-
-    }*/
    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void sendNotification(int batLevel){
 
