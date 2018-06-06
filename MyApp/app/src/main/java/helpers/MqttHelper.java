@@ -49,7 +49,6 @@ public class MqttHelper {
 
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
                 }
             });
             connect(location);
@@ -67,7 +66,6 @@ public class MqttHelper {
             //mqttConnectOptions.setPassword(password.toCharArray());
 
             try {
-
                 mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
@@ -87,8 +85,6 @@ public class MqttHelper {
                         Log.w("Test", "Failed to connect to: " + serverUri + exception.toString());
                     }
                 });
-
-
             } catch (MqttException ex){
                 ex.printStackTrace();
             }
