@@ -164,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     ImageView imageView;
 
     //MQTT
-    MqttHelper mqttHelper;
+    MqttHelper mqttHelper, mqttSender;
     TextView dataReceived;
+    public boolean firstMqtt = true;
 
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
 
@@ -229,11 +230,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         mTaskListView = findViewById(R.id.list_todo);
         updateUI();
 
-
-
-
         //sendNotification();
-
 
         //Initialise vibrator variable with vibrator_service
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -566,22 +563,39 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** End: User setting ******************************************/
 
     /********************************************** Function: MQTT part ****************************************/
+
     private void startMqtt(String lat, String longi){
+
         mqttHelper = new MqttHelper(getApplicationContext(), "lat:"+lat+"\n long:"+longi);
+
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
-            public void connectComplete(boolean b, String s){}
+            public void connectComplete(boolean b, String s){
+
+            }
             @Override
-            public void connectionLost(Throwable throwable) {}
+            public void connectionLost(Throwable throwable) {
+                changeTitle("Wristband Not Connected");
+            }
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 Log.w("Debug",mqttMessage.toString());
                 dataReceived.setText(mqttMessage.toString());
+                changeTitle("Wristband Connected");
             }
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
         });
     }
+    //0 0 0
+    //0 1 1
+    //1 0 0
+    //1 1 1
+
+    void changeTitle(String title){
+        getSupportActionBar().setTitle(title);
+    }
+
     /********************************************** End: MQTT part ******************************************/
 
     /********************************************** Function: Location Implementation ******************************************/
@@ -600,10 +614,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
             getLocation(mMap);
-            //LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            //Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.5f), 4000, null);
-
         }
     }
 
