@@ -299,46 +299,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions();
-                    return;
-                }
-                locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        double lat = location.getLatitude();
-                        double longi = location.getLongitude();
-                        if (location != null) {
-                            startMqtt(Double.toString(lat),Double.toString(longi));
-                            //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
-                            url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
-
-                            urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe|restaurant|food|drink|police&key=" + PLACES_API_KEY;
-
-                            //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
-                            sendSMSMessage();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
-                        }
-                        /************ Parse Json *******************/
-                        if(boolList) {
-                            StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String string) {
-                                    parseJsonData(string);
-                                }
-                            }, new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
-                                    Toast.makeText(getApplicationContext(), "Some error occurred when requesting nearest locations!", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
-                            RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
-                            rQueue.add(request);
-                        }
-                    }
-                });
+                HelpButton();
             }
         });
         /********************************* End Help Button *********************************/
@@ -369,6 +330,50 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             }
         });
 
+    }
+
+    /************ Help Button Implementation *******************/
+    void HelpButton(){
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions();
+            return;
+        }
+        locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                double lat = location.getLatitude();
+                double longi = location.getLongitude();
+                if (location != null) {
+                    startMqtt(Double.toString(lat),Double.toString(longi));
+                    //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
+                    url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
+
+                    urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe|restaurant|food|drink|police&key=" + PLACES_API_KEY;
+
+                    //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
+                    sendSMSMessage();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
+                }
+                /************ Parse Json *******************/
+                if(boolList) {
+                    StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String string) {
+                            parseJsonData(string);
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+                            Toast.makeText(getApplicationContext(), "Some error occurred when requesting nearest locations!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
+                    rQueue.add(request);
+                }
+            }
+        });
     }
 
     /******* To-Do List *************/
@@ -571,7 +576,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
             public void connectComplete(boolean b, String s){
-
+                changeTitle("Wristband Connected");
             }
             @Override
             public void connectionLost(Throwable throwable) {
@@ -579,9 +584,18 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             }
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("Debug",mqttMessage.toString());
-                dataReceived.setText(mqttMessage.toString());
+                String msgReceived = mqttMessage.toString();
+                Log.w("Debug",msgReceived);
+                dataReceived.setText(msgReceived);
                 changeTitle("Wristband Connected");
+                switch(msgReceived){
+                    case ("Warning"):
+                        HelpButton();
+                    default:
+                        dataReceived.setText(msgReceived);
+                        changeTitle("Wristband Connected");
+
+                }
             }
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
