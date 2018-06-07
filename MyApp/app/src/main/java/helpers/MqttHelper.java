@@ -17,8 +17,9 @@ import java.io.UnsupportedEncodingException;
 public class MqttHelper {
         public MqttAndroidClient mqttAndroidClient;
 
-        final String serverUri = "tcp://192.168.43.203:1883";
-        //final String serverUri = "tcp://192.168.43.218:61613";
+
+        final String serverUri = "tcp://192.168.43.185:1883";
+
         final String clientId = "ExampleAndroidClient";
         final String subscriptionTopic = "Test";
 
@@ -32,21 +33,25 @@ public class MqttHelper {
         public MqttHelper(Context context, String location){
             mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+
                 @Override
                 public void connectComplete(boolean b, String s) {
                     Log.w("Test", s);
                 }
 
+                //losing the MQTT connection
                 @Override
                 public void connectionLost(Throwable throwable) {
 
                 }
 
+                //message is received on a subscribed topic.
                 @Override
                 public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                     Log.w("Test", mqttMessage.toString());
                 }
 
+                //message published by this client is successfully received by the broker.
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
                 }
