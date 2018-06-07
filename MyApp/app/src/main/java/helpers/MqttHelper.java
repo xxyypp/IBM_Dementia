@@ -17,13 +17,13 @@ import java.io.UnsupportedEncodingException;
 public class MqttHelper {
         public MqttAndroidClient mqttAndroidClient;
 
-        final String serverUri = "tcp://192.168.43.203:1883";
-
+        final String serverUri = "tcp://192.168.43.38:1883";
+        //final String serverUri = "tcp://192.168.43.218:61613";
         final String clientId = "ExampleAndroidClient";
         final String subscriptionTopic = "Test";
 
-        final String username = "xxxxxxx";
-        final String password = "yyyyyyy";
+        final String username = "admin";
+        final String password = "password";
 
         final String topic = "Test";
         final String payload = "Hello from Android";
