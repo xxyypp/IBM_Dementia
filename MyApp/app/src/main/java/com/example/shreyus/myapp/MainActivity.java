@@ -164,6 +164,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     MqttHelper mqttHelper, mqttSender;
     TextView dataReceived;
     public boolean firstMqtt = true;
+    public String pub_current_location = "Current";
+    public String pub_dest_location = "Dest";
 
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
 
@@ -211,6 +213,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        changeTitle("Wristband Not Connected");
 
         //retrieve data saved
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
@@ -281,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
         if(firstTime) {
-            startMqtt("Hello ", "from Android","","" );
+            startMqtt("Test","Hello ", "from Android","","" );
             firstTime = false;
         }
 
@@ -587,9 +591,18 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     /********************************************** Function: MQTT part ****************************************/
 
-    private void startMqtt(String currentLat, String currentLongi, String lat, String longi){
+    private void startMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
+        mqttHelper = new MqttHelper(getApplicationContext(), "default",currentLat+","+currentLongi);
+        switch(topic){
+            case("Current"):
+                mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi+"\n"+lat+","+longi);
+            case("Test"):
+                mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi);
+            default:
+                mqttHelper = new MqttHelper(getApplicationContext(), "default",currentLat+","+currentLongi);
+        }
 
-        mqttHelper = new MqttHelper(getApplicationContext(), currentLat+","+currentLongi+"\n"+lat+","+longi);
+        //mqttHelper = new MqttHelper(getApplicationContext(), pub_dest_location,lat+","+longi);
 
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
@@ -760,6 +773,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             /************ Navigation *******************/
             if(boolNavigation){
                 Navigation(al,0);
+            }else{
+                startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
             }
             /******************************************/
 
@@ -779,8 +794,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
     void Navigation(ArrayList<Locations> al,int i){
-        startMqtt(currentLat,currentLongi, al.get(i).getLat(), al.get(i).getLongi());
-        Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+","+al.get(i).getLongi()+"&mode=w");
+        startMqtt("Current",currentLat,currentLongi, al.get(i).getLat(), al.get(i).getLongi());
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+", "+al.get(i).getLongi()+"&mode=w");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
