@@ -160,9 +160,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     public boolean boolBattery;
     public boolean firstTime = true;
 
-    Switch switchVibration;
-    ImageView imageView;
-
     //MQTT
     MqttHelper mqttHelper, mqttSender;
     TextView dataReceived;
@@ -179,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     //JSON closest location
     ListView jsontxt;
     String url, urljson;
+    String currentLat;
+    String currentLongi;
     String destLat = "123";
     String destLongi = "456";
     String destName = "A safe space";
@@ -228,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         //To-do list
         mHelper = new TaskDbHelper(this);
         mTaskListView = findViewById(R.id.list_todo);
+        mTaskListView.setVisibility(View.GONE);
         updateUI();
 
         //sendNotification();
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
         if(firstTime) {
-            startMqtt("Hello ", "from Android");
+            startMqtt("Hello ", "from Android","","" );
             firstTime = false;
         }
 
@@ -343,8 +343,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             public void onSuccess(Location location) {
                 double lat = location.getLatitude();
                 double longi = location.getLongitude();
+                currentLat = Double.toString(lat);
+                currentLongi=Double.toString(longi);
+
                 if (location != null) {
-                    startMqtt(Double.toString(lat),Double.toString(longi));
                     //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
                     url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
@@ -396,15 +398,17 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String task = String.valueOf(taskEditText.getText());
-                                SQLiteDatabase db = mHelper.getWritableDatabase();
-                                ContentValues values = new ContentValues();
-                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                        null,
-                                        values,
-                                        SQLiteDatabase.CONFLICT_REPLACE);
-                                db.close();
-                                updateUI();
+                                if(task.trim().length()>0) {
+                                    SQLiteDatabase db = mHelper.getWritableDatabase();
+                                    ContentValues values = new ContentValues();
+                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                                    db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                            null,
+                                            values,
+                                            SQLiteDatabase.CONFLICT_REPLACE);
+                                    db.close();
+                                    updateUI();
+                                }
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -435,7 +439,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     R.id.task_title,
                     taskList);
             mTaskListView.setAdapter(mAdapter);
+
         } else {
+            mTaskListView.setVisibility(View.VISIBLE);
             mAdapter.clear();
             mAdapter.addAll(taskList);
             mAdapter.notifyDataSetChanged();
@@ -569,9 +575,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     /********************************************** Function: MQTT part ****************************************/
 
-    private void startMqtt(String lat, String longi){
+    private void startMqtt(String currentLat, String currentLongi, String lat, String longi){
 
-        mqttHelper = new MqttHelper(getApplicationContext(), "lat:"+lat+"\n long:"+longi);
+        mqttHelper = new MqttHelper(getApplicationContext(), currentLat+","+currentLongi+"\n"+lat+","+longi);
 
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
@@ -761,6 +767,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
     void Navigation(ArrayList<Locations> al,int i){
+        startMqtt(currentLat,currentLongi, al.get(i).getLat(), al.get(i).getLongi());
         Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+","+al.get(i).getLongi()+"&mode=w");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
