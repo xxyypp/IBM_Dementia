@@ -447,22 +447,26 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     R.id.task_title,
                     taskList);
 
+
+
+            mTaskListView.setAdapter(mAdapter);
+
             if(mAdapter.getCount()!=0){
                 mTaskListView.setVisibility(View.VISIBLE);
             }
 
-            mTaskListView.setAdapter(mAdapter);
-
         } else {
+
+            mAdapter.clear();
+            mAdapter.addAll(taskList);
+            mAdapter.notifyDataSetChanged();
+
             if(mAdapter.getCount()!=0) {
                 mTaskListView.setVisibility(View.VISIBLE);
             }
             else{
                 mTaskListView.setVisibility(View.GONE);
             }
-            mAdapter.clear();
-            mAdapter.addAll(taskList);
-            mAdapter.notifyDataSetChanged();
         }
 
         cursor.close();
