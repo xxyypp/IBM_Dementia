@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
         if(firstTime) {
-            startMqtt("Test","Hello ", "from Android","","" );
+            startMqtt("Test1","Hello ", "from Android","","" );
             firstTime = false;
         }
 
@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                 }
                 /************ Parse Json *******************/
-                if(boolList) {
+                if(boolList || boolNavigation) {
                     StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String string) {
@@ -377,6 +377,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
                     RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
                     rQueue.add(request);
+                }else{
+                    startMqtt("Test2",currentLat,currentLongi,currentLat,currentLongi);
                 }
             }
         });
@@ -599,7 +601,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             case("Test"):
                 mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi);
             default:
-                mqttHelper = new MqttHelper(getApplicationContext(), "default",currentLat+","+currentLongi);
+                mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi);
         }
 
         //mqttHelper = new MqttHelper(getApplicationContext(), pub_dest_location,lat+","+longi);
@@ -774,7 +776,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if(boolNavigation){
                 Navigation(al,0);
             }else{
-                startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
+                startMqtt("Test3",currentLat,currentLongi,currentLat,currentLongi);
             }
             /******************************************/
 

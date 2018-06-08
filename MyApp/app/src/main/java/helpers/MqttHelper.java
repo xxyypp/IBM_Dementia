@@ -99,6 +99,9 @@ public class MqttHelper {
             try {
                 encodedPayload = location.getBytes("UTF-8");
                 MqttMessage message = new MqttMessage(encodedPayload);
+                int qos=2;
+                message.setQos(qos);
+                //message.setQos(qos);
                 //mqttAndroidClient.publish(topic, message);
                 mqttAndroidClient.publish(pub_topic, message);
             } catch (UnsupportedEncodingException | MqttException e) {
@@ -108,7 +111,7 @@ public class MqttHelper {
 
         private void subscribeToTopic() {
             try {
-                mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {
+                mqttAndroidClient.subscribe(subscriptionTopic, 2, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
                         Log.w("Test","Subscribed!");
