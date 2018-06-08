@@ -425,9 +425,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     private void updateUI() {
         ArrayList<String> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
+
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
                 null, null, null, null, null);
+
         while (cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
             taskList.add(cursor.getString(idx));
@@ -438,10 +440,20 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     R.layout.item_todo,
                     R.id.task_title,
                     taskList);
+
+            if(mAdapter.getCount()!=0){
+                mTaskListView.setVisibility(View.VISIBLE);
+            }
+
             mTaskListView.setAdapter(mAdapter);
 
         } else {
-            mTaskListView.setVisibility(View.VISIBLE);
+            if(mAdapter.getCount()!=0) {
+                mTaskListView.setVisibility(View.VISIBLE);
+            }
+            else{
+                mTaskListView.setVisibility(View.GONE);
+            }
             mAdapter.clear();
             mAdapter.addAll(taskList);
             mAdapter.notifyDataSetChanged();
