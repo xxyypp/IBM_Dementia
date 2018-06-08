@@ -30,7 +30,7 @@ public class MqttHelper {
         final String payload = "Hello from Android";
         byte[] encodedPayload = new byte[0];
 
-        public MqttHelper(Context context, String location){
+        public MqttHelper(Context context, String pub_topic, String location){
             mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
             mqttAndroidClient.setCallback(new MqttCallbackExtended() {
 
@@ -56,14 +56,14 @@ public class MqttHelper {
                 public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
                 }
             });
-            connect(location);
+            connect(pub_topic,location);
         }
 
         public void setCallback(MqttCallbackExtended callback) {
             mqttAndroidClient.setCallback(callback);
         }
 
-        private void connect(final String location){
+        private void connect(final String pub_topic,final String location){
             MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setAutomaticReconnect(true);
             mqttConnectOptions.setCleanSession(false);
@@ -82,7 +82,7 @@ public class MqttHelper {
                         disconnectedBufferOptions.setDeleteOldestMessages(false);
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
                         subscribeToTopic();
-                        publishToTopic(location);
+                        publishToTopic(pub_topic,location);
                     }
 
                     @Override
@@ -95,11 +95,12 @@ public class MqttHelper {
             }
         }
 
-        private void publishToTopic(String location){
+        private void publishToTopic(String pub_topic, String location){
             try {
                 encodedPayload = location.getBytes("UTF-8");
                 MqttMessage message = new MqttMessage(encodedPayload);
-                mqttAndroidClient.publish(topic, message);
+                //mqttAndroidClient.publish(topic, message);
+                mqttAndroidClient.publish(pub_topic, message);
             } catch (UnsupportedEncodingException | MqttException e) {
                 e.printStackTrace();
             }
