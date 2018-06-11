@@ -19,21 +19,17 @@ public class MqttHelper {
         public static MqttAndroidClient mqttAndroidClient;
 
 
-        //final String serverUri = "tcp://192.168.43.185:1883";
+        final String serverUri = "tcp://192.168.43.185:1883";
         //final String serverUri = "tcp://192.168.1.145:61613";
-        final String serverUri = "tcp://146.169.168.71:61613";
+        //final String serverUri = "tcp://146.169.168.71:61613";
 
 
 
         final String clientId = "ExampleAndroidClient" + System.currentTimeMillis();
         final String subscriptionTopic = "Test";
 
-        final String username = "admin";
-        final String password = "password";
-
-        final String topic = "Test";
-        final String payload = "Hello from Android";
-        byte[] encodedPayload = new byte[0];
+        //final String username = "admin";
+        //final String password = "password";
 
     public MqttHelper(Context context){
         MemoryPersistence memPer = new MemoryPersistence();
@@ -46,7 +42,6 @@ public class MqttHelper {
 
             @Override
             public void connectionLost(Throwable throwable) {
-
             }
 
             @Override
@@ -70,8 +65,8 @@ public class MqttHelper {
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
-        mqttConnectOptions.setUserName(username);
-        mqttConnectOptions.setPassword(password.toCharArray());
+        //mqttConnectOptions.setUserName(username);
+        //mqttConnectOptions.setPassword(password.toCharArray());
 
         try {
             mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
@@ -113,9 +108,6 @@ public class MqttHelper {
             System.err.println("Error Publishing: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-    public void sendMessage(String message) {
-        publishMessage("Test1",message);
     }
     private void subscribeToTopic() {
         try {
