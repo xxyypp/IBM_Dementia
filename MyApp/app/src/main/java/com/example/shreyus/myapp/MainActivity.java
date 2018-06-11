@@ -391,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     rQueue.add(request);
                 }else{
                     //If list and navigation are both turned off, only send current location
-                    startMqtt("Current",currentLat,currentLongi,"123","11");
+                    startMqtt("Current",currentLat,currentLongi,"list-on/off","nav-off");
                 }
             }
         });
@@ -621,14 +621,17 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     }
     private void startMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
-        switch(topic){
-            case "Current" :
+        switch (topic) {
+            case("Current"):
                 mqttHelper.connect("Current",currentLat+","+currentLongi+"\n"+lat+","+longi);
-            case "Test" :
-                mqttHelper.connect("Test",currentLat+","+currentLongi+"abcezas123");
-//            default:
-//                mqttHelper.connect("",currentLat+","+currentLongi);
+                break;
+            case("Test"):
+                mqttHelper.connect("Test",currentLat+","+currentLongi);
+                break;
+            default:
+                throw new IllegalArgumentException("alkjdsflaskdjfals;kdjf ");
         }
+
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
             public void connectComplete(boolean b, String s){
