@@ -641,7 +641,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 String msgReceived = mqttMessage.toString();
-                Toast.makeText(getApplicationContext(), "Received:"+msgReceived, Toast.LENGTH_LONG).show();
                 Log.w("Debug",msgReceived);
                 dataReceived.setText(msgReceived);
                 changeTitle("Wristband Connected");
