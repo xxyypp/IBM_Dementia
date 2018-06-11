@@ -90,8 +90,11 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -161,11 +164,18 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     public boolean firstTime = true;
 
     //MQTT
-    MqttHelper mqttHelper, mqttSender;
+    public MqttHelper mqttHelper;
+    byte[] encodedPayload = new byte[0];
     TextView dataReceived;
     public boolean firstMqtt = true;
     public String pub_current_location = "Current";
     public String pub_dest_location = "Dest";
+    //final String serverUri = "tcp://192.168.43.185:1883";
+    final String serverUri = "tcp://192.168.1.145:61613";
+    final String clientId = "ExampleAndroidClient" + System.currentTimeMillis();
+    final String subscriptionTopic = "Test";
+    final String username = "admin";
+    final String password = "password";
 
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
 
@@ -284,8 +294,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         //MQTT
         dataReceived = findViewById(R.id.dataReceived);
+        mqttHelper = new MqttHelper(getApplicationContext());
+
         if(firstTime) {
-            startMqtt("Test1","Hello ", "from Android","","" );
+            startMqtt("Test","Hello ", "from Android","","" );
+            //sendMqtt("Test","","","","");
             firstTime = false;
         }
 
@@ -378,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
                     rQueue.add(request);
                 }else{
-                    startMqtt("Test2",currentLat,currentLongi,currentLat,currentLongi);
+                    startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
                 }
             }
         });
@@ -596,20 +609,26 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** End: User setting ******************************************/
 
     /********************************************** Function: MQTT part ****************************************/
+    void sendMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
+        Log.i("MQTT", "In send MQTT function ************************");
+        //mqttHelper.publishToTopic(topic,"Hello from Android");
+        mqttHelper.publishMessage(topic,"Hello from Android");
+        /*try {
+                        mqttHelper.mqttAndroidClient.publish(topic, ("Hello from Android").getBytes(),0,false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }*/
 
+    }
     private void startMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
-        mqttHelper = new MqttHelper(getApplicationContext(), "default",currentLat+","+currentLongi);
         switch(topic){
             case("Current"):
-                mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi+"\n"+lat+","+longi);
+                mqttHelper.connect(topic,currentLat+","+currentLongi+"\n"+lat+","+longi);
             case("Test"):
-                mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi);
-            default:
-                mqttHelper = new MqttHelper(getApplicationContext(), topic,currentLat+","+currentLongi);
+                mqttHelper.connect(topic,currentLat+","+currentLongi);
+//            default:
+//                mqttHelper.connect("",currentLat+","+currentLongi);
         }
-
-        //mqttHelper = new MqttHelper(getApplicationContext(), pub_dest_location,lat+","+longi);
-
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
             public void connectComplete(boolean b, String s){
@@ -622,6 +641,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 String msgReceived = mqttMessage.toString();
+                Toast.makeText(getApplicationContext(), "Received:"+msgReceived, Toast.LENGTH_LONG).show();
                 Log.w("Debug",msgReceived);
                 dataReceived.setText(msgReceived);
                 changeTitle("Wristband Connected");
@@ -637,6 +657,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
         });
+
     }
     //0 0 0
     //0 1 1
@@ -780,7 +801,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if(boolNavigation){
                 Navigation(al,0);
             }else{
-                startMqtt("Test3",currentLat,currentLongi,currentLat,currentLongi);
+                startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
             }
             /******************************************/
 
