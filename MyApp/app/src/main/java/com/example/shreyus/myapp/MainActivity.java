@@ -298,7 +298,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         if(firstTime) {
             startMqtt("Test","Hello ", "from Android","","" );
-            //sendMqtt("Test","","","","");
             firstTime = false;
         }
 
@@ -375,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                 }
                 /************ Parse Json *******************/
-                if(boolList || boolNavigation) {
+                if(boolNavigation || boolList) {
                     StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String string) {
@@ -391,7 +390,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     RequestQueue rQueue = Volley.newRequestQueue(MainActivity.this);
                     rQueue.add(request);
                 }else{
-                    startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
+                    //If list and navigation are both turned off, only send current location
+                    startMqtt("Current",currentLat,currentLongi,"","");
                 }
             }
         });
@@ -659,10 +659,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
 
     }
-    //0 0 0
-    //0 1 1
-    //1 0 0
-    //1 1 1
 
     void changeTitle(String title){
         getSupportActionBar().setTitle(title);
@@ -801,27 +797,30 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if(boolNavigation){
                 Navigation(al,0);
             }else{
-                startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
+                //startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
             }
             /******************************************/
-
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
-            jsontxt.setVisibility(View.VISIBLE);
-            jsontxt.setAdapter(adapter);
-            jsontxt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                   //Toast.makeText(MainActivity.this, al.get(position).getLat().toString(), Toast.LENGTH_LONG).show();
-                    Navigation(al,position);
-                }
-            });
+            if(boolList){
+                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, names);
+                jsontxt.setVisibility(View.VISIBLE);
+                jsontxt.setAdapter(adapter);
+                jsontxt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                       //Toast.makeText(MainActivity.this, al.get(position).getLat().toString(), Toast.LENGTH_LONG).show();
+                        Navigation(al,position);
+                    }
+                });
+            }
             //Toast.makeText(getApplicationContext(), "JSON function called.",Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
     void Navigation(ArrayList<Locations> al,int i){
-        startMqtt("Current",currentLat,currentLongi, al.get(i).getLat(), al.get(i).getLongi());
+        if(boolNavigation || boolList) {
+            startMqtt("Current", currentLat, currentLongi, al.get(i).getLat(), al.get(i).getLongi());
+        }
         Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+", "+al.get(i).getLongi()+"&mode=w");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
