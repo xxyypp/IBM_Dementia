@@ -12,6 +12,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -360,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 double lat = location.getLatitude();
                 double longi = location.getLongitude();
                 currentLat = Double.toString(lat);
-                currentLongi=Double.toString(longi);
+                currentLongi= Double.toString(longi);
 
                 if (location != null) {
                     //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
@@ -822,7 +824,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     void Navigation(ArrayList<Locations> al,int i){
         if(boolNavigation || boolList) {
             startMqtt("Current", currentLat, currentLongi, al.get(i).getLat(), al.get(i).getLongi());
+            Intent intent = new Intent(this, LocationService.class);
+            startService(intent);
         }
+
         Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+", "+al.get(i).getLongi()+"&mode=w");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
