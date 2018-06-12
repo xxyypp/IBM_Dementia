@@ -35,6 +35,7 @@ dependencies {
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation "com.android.support:support-compat:27.1.1"
+    implementation 'com.android.support:cardview-v7:27.1.1'
 }
 repositories {
 //    maven {

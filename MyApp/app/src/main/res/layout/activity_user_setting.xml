@@ -174,46 +174,79 @@
 
     <Switch
         android:id="@+id/switchBattery"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="408dp"
-        android:text="Battery warning"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="43dp"
+        android:layout_height="23dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/switchVibrate"
+        app:layout_constraintEnd_toStartOf="@+id/switchVibrate"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Switch
         android:id="@+id/switchList"
-        android:layout_width="110dp"
+        android:layout_width="44dp"
         android:layout_height="30dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="488dp"
-        android:text="List"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="104dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/switchNavigation" />
 
     <Switch
         android:id="@+id/switchNavigation"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="448dp"
-        android:text="Navigate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="44dp"
+        android:layout_height="25dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/switchList"
+        app:layout_constraintEnd_toStartOf="@+id/switchList"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/switchVibrate" />
 
     <Switch
         android:id="@+id/switchVibrate"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="368dp"
+        android:layout_width="46dp"
+        android:layout_height="19dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/switchNavigation"
+        app:layout_constraintEnd_toStartOf="@+id/switchNavigation"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/switchBattery" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="58dp"
+        android:layout_height="19dp"
         android:text="Vibration"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/switchVibrate"
+        app:layout_constraintEnd_toEndOf="@+id/switchVibrate"
+        app:layout_constraintStart_toStartOf="@+id/switchVibrate" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="55dp"
+        android:layout_height="37dp"
+        android:text="Battery Warning"
+        app:layout_constraintBottom_toTopOf="@+id/switchBattery"
+        app:layout_constraintEnd_toEndOf="@+id/switchBattery"
+        app:layout_constraintStart_toStartOf="@+id/switchBattery" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="56dp"
+        android:layout_height="19dp"
+        android:text="Navigate"
+        app:layout_constraintBottom_toTopOf="@+id/switchNavigation"
+        app:layout_constraintEnd_toEndOf="@+id/switchNavigation"
+        app:layout_constraintStart_toStartOf="@+id/switchNavigation" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="29dp"
+        android:layout_height="19dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:text="List"
+        app:layout_constraintBottom_toTopOf="@+id/switchList"
+        app:layout_constraintEnd_toEndOf="@+id/switchList"
+        app:layout_constraintStart_toStartOf="@+id/switchList" />
 
 </android.support.constraint.ConstraintLayout>
