@@ -712,7 +712,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if((phoneNum1 != null && !phoneNum1.isEmpty())||
                (phoneNum2 != null && !phoneNum2.isEmpty())||
                (phoneNum3 != null && !phoneNum3.isEmpty())){
-                SendTextMsg();
+                SendTextMsg(false,"");
             }else{
                 Toast.makeText(getApplicationContext(),"Please set your contact number(s)!", Toast.LENGTH_LONG).show();
             }
@@ -725,7 +725,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_SEND_SMS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SendTextMsg();
+                    SendTextMsg(false,"");
                 } else {
                     Toast.makeText(getApplicationContext(),"SMS failed, please allow permission and try again.", Toast.LENGTH_LONG).show();
                 }
@@ -734,10 +734,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
 
     //***** Main function to send txt message to pre-define contact short-cut *******
-    private void SendTextMsg() {
+    private void SendTextMsg(Boolean boolDest, String urlDest) {
         SmsManager smsManager = SmsManager.getDefault();
         String messageToSend;
-        if(false) {
+        if(boolDest) {
             messageToSend = "Your HELP is needed. Current location: " + url + " \nNext safe place: " + urlDest;
         }
         else{
@@ -843,6 +843,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         Uri gmmIntentUri = Uri.parse("google.navigation:q="+destLat+", "+destLongi+"&mode=w");
         urlDest= "http://maps.google.com/maps?z=12&t=m&q=" + destLat + "+" + destLongi;
+        SendTextMsg(true,urlDest);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
