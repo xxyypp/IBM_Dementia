@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     //JSON closest location
     ListView jsontxt;
     String url, urljson;
+    String urlDest;
     String currentLat;
     String currentLongi;
     String destLat = "123";
@@ -735,6 +736,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     //***** Main function to send txt message to pre-define contact short-cut *******
     private void SendTextMsg() {
         SmsManager smsManager = SmsManager.getDefault();
+        String messageToSend;
+        if(false) {
+            messageToSend = "Your HELP is needed. Current location: " + url + " \nNext safe place: " + urlDest;
+        }
+        else{
+            messageToSend = "Your HELP is needed. Current location: "+ url;
+        }
 
         if(boolSend1 && (phoneNum1 != null && !phoneNum1.isEmpty())){
             smsManager.sendTextMessage(phoneNum1, null, message, null, null);
@@ -756,13 +764,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
         else{
             if ((phoneNum1 != null && !phoneNum1.isEmpty()) && phoneNum1 !="") {
-                smsManager.sendTextMessage(phoneNum1, null, url, null, null);
+                smsManager.sendTextMessage(phoneNum1, null, messageToSend, null, null);
             }
             if ((phoneNum2 != null && !phoneNum2.isEmpty()) && phoneNum2 !="") {
-                smsManager.sendTextMessage(phoneNum2, null, url, null, null);
+                smsManager.sendTextMessage(phoneNum2, null, messageToSend, null, null);
             }
             if ((phoneNum3 != null && !phoneNum3.isEmpty()) && phoneNum3 !="") {
-                smsManager.sendTextMessage(phoneNum3, null, url, null, null);
+                smsManager.sendTextMessage(phoneNum3, null, messageToSend, null, null);
             }
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, HELP is coming.",Toast.LENGTH_LONG).show();
         }
@@ -822,13 +830,19 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
     void Navigation(ArrayList<Locations> al,int i){
+        destLat = al.get(i).getLat();
+        destLongi = al.get(i).getLongi();
+
         if(boolNavigation || boolList) {
-            startMqtt("Current", currentLat, currentLongi, al.get(i).getLat(), al.get(i).getLongi());
+            startMqtt("Current", currentLat, currentLongi, destLat, destLongi);
             Intent intent = new Intent(this, LocationService.class);
+            intent.putExtra("destinationLat",al.get(i).getLat());
+            intent.putExtra("destinationLongi", destLongi);
             startService(intent);
         }
 
-        Uri gmmIntentUri = Uri.parse("google.navigation:q="+al.get(i).getLat()+", "+al.get(i).getLongi()+"&mode=w");
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+destLat+", "+destLongi+"&mode=w");
+        urlDest= "http://maps.google.com/maps?z=12&t=m&q=" + destLat + "+" + destLongi;
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getPackageManager()) != null) {

@@ -40,6 +40,8 @@ public class LocationService extends IntentService {
         // Normally we would do some work here, like download a file.
         // For our sample, we just sleep for 5 seconds.
         try {
+            final String destLat = intent.getStringExtra("destinationLat");
+            final String destLongi = intent.getStringExtra("destinationLongi");
             while(true) {
                 Thread.sleep(5000);
                 locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -48,7 +50,7 @@ public class LocationService extends IntentService {
                         double lat = location.getLatitude();
                         double longi = location.getLongitude();
                         if (location != null) {
-                            mqttHelper.connect("Current", lat + "," + longi + "\n" + 123 + "," + 123);
+                            mqttHelper.connect("Current", lat + "," + longi + "\n" + destLat + "," + destLongi);
                         } else {
                             mqttHelper.connect("Current", "oops, service works, but no location!");
                         }
