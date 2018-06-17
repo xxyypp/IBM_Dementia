@@ -18,22 +18,33 @@ import java.io.UnsupportedEncodingException;
 public class MqttHelper {
         public static MqttAndroidClient mqttAndroidClient;
 
-
+        /**
+        *  MQTT host/sever address ip -> Raspberry Pi ip address
+        *  In Raspberry Pi terminal, type hostname -I
+        *  To obtain current host ip address
+        */
         final String serverUri = "tcp://192.168.43.185:1883";
         //final String serverUri = "tcp://192.168.1.145:61613";
         //final String serverUri = "tcp://146.169.168.71:61613";
 
-
-
+        /** Android app id in Mqtt **/
         final String clientId = "ExampleAndroidClient" + System.currentTimeMillis();
+        /** Message topic
+         *  Need to be changed spontaneous with NodeRed
+         */
         final String subscriptionTopic = "Test";
 
+        /**
+         * If Server use Apollo please uncomment this part
+         */
         //final String username = "admin";
         //final String password = "password";
 
     public MqttHelper(Context context){
         MemoryPersistence memPer = new MemoryPersistence();
+        /** Setup mqtt client */
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId,memPer);
+        /** Set callback for mqtt */
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
@@ -42,6 +53,7 @@ public class MqttHelper {
 
             @Override
             public void connectionLost(Throwable throwable) {
+                Log.w("mqtt", "Connection lost");
             }
 
             @Override
@@ -51,9 +63,9 @@ public class MqttHelper {
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
             }
         });
+        /** Connect to broker*/
         connect("","");
     }
 
@@ -61,10 +73,14 @@ public class MqttHelper {
         mqttAndroidClient.setCallback(callback);
     }
 
+    /** Connection function*/
     public void connect(final String topic, final String message){
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
+        /**
+         * If Server use Apollo please uncomment this part
+         */
         //mqttConnectOptions.setUserName(username);
         //mqttConnectOptions.setPassword(password.toCharArray());
 
@@ -79,6 +95,7 @@ public class MqttHelper {
                     disconnectedBufferOptions.setPersistBuffer(false);
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+                    /**Subscribe and publish function*/
                     subscribeToTopic();
                     publishMessage(topic,message);
                 }
@@ -94,6 +111,7 @@ public class MqttHelper {
             ex.printStackTrace();
         }
     }
+    /** Publish function*/
     public void publishMessage(String publishTopic,String publishMessage){
 
         try {
@@ -109,6 +127,7 @@ public class MqttHelper {
             e.printStackTrace();
         }
     }
+    /** Subscription function*/
     private void subscribeToTopic() {
         try {
             mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {

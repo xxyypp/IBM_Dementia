@@ -131,17 +131,16 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     public boolean boolBattery;
     public boolean firstTime = true;
 
-    //MQTT
+    /** MQTT declaration */
     public MqttHelper mqttHelper;
     TextView dataReceived;
 
-    //final String serverUri = "tcp://192.168.43.185:1883";
-    final String serverUri = "tcp://192.168.1.145:61613";
-
-    //final String username = "admin";
-    //final String password = "password";
-
+    /** Place api key*/
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
+    /**
+     *  Two different battery warning levels:
+     *  20% and 50%
+     * */
     int LOW_BATTERY_LIFE = 50;
     int CRITICAL_BATTERY_LIFE = 20;
 
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     //Current Location
     private FusedLocationProviderClient locationClient;
 
-    //JSON closest location
+    //Navigation initialisation
     ListView jsontxt;
     String url, urljson;
     String urlDest;
@@ -162,38 +161,42 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     String destName = "A safe space";
 
 
-    //SMS
+    /** SMS */
     private static final int MY_PERMISSION_REQUEST_SEND_SMS = 0;
 
-    //For sending sms
-    String phoneNum1 , phoneNum2 , phoneNum3;//vm1 5554, vm2 5556
+    /** Sending sms initialisation */
+    String phoneNum1 , phoneNum2 , phoneNum3;
     String personName1,personName2,personName3;
     String message = "Help!";
     TextView txtContact1, txtContact2, txtContact3;
 
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
 
-    //For saving data after closing
+    /** For saving data after closing the app */
     public static final String PREFS_NAME = "MyContact";
 
-    //Used for vibration function
+    /** Used for vibration function */
     public static Vibrator v;
 
-
     /********************************************** End Pre-define ******************************************/
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /** Change app title while initialing the app */
         changeTitle("Wristband Not Connected");
 
-        //retrieve data saved
+        /** retrieve data saved */
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
         UpdateBooleanUserSetting(dataSaved);
 
-        //Check if first time setup
+        /** Check if first time setup the app
+         *  If yes, go to setting page
+         *          and update the tuple in SharedPreferences
+         * */
         if(dataSaved.getString("firstTimeSetup", null)==null){
             openUserSettings();
             SharedPreferences.Editor editor = dataSaved.edit();
@@ -201,20 +204,23 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             editor.commit();
         }
 
-        //To-do list
+        /**
+         *  To-do list Initialisation
+         *  Get xml for the to-do list from list_todo.xml
+         *  Set it invisible until it's been called
+         *  Update the UI for the initialisation
+         */
         mHelper = new TaskDbHelper(this);
         mTaskListView = findViewById(R.id.list_todo);
         mTaskListView.setVisibility(View.GONE);
-
         updateUI();
 
-        //sendNotification();
-
-        //Initialise vibrator variable with vibrator_service
+        /**
+         * Initialise vibrator variable with vibrator_service
+         */
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        //Link button variables to buttons in XML layout
-
+        /** Link button variables to buttons in XML layout */
         Button sendContact1 = findViewById(R.id.contact1);//click button1 action:
         Button sendContact2 = findViewById(R.id.contact2);
         Button sendContact3 = findViewById(R.id.contact3);
@@ -222,12 +228,15 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         txtContact2 = findViewById(R.id.txtContact2);
         txtContact3 = findViewById(R.id.txtContact3);
 
-        //Read phone number from database during activity Create
-
+        /**
+         *  Read phone number from database during activity OnCreate
+         *  Update Person shortcut image from SharedPreference
+         *  Update Phone number
+         *  Update Person name
+         */
         UpdateImage(dataSaved,person1_img,sendContact1);
         UpdateImage(dataSaved,person2_img,sendContact2);
         UpdateImage(dataSaved,person3_img,sendContact3);
-
         phoneNum1 = dataSaved.getString(person1_id,null);
         phoneNum2 = dataSaved.getString(person2_id,null);
         phoneNum3 = dataSaved.getString(person3_id,null);
@@ -235,9 +244,17 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         personName2 = dataSaved.getString(person2_name,null);
         personName3 = dataSaved.getString(person3_name,null);
 
+        /**
+         * Initialise optional destination list
+         * Set to invisible
+         */
         jsontxt = findViewById(R.id.jsonTXT);
         jsontxt.setVisibility(View.GONE);
 
+        /**
+         * If person name is not Null
+         * Update name to the button
+         */
         if(personName1 != null && !personName1.isEmpty()){
             txtContact1.setText(personName1);
         }else{
@@ -254,12 +271,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             txtContact3.setText("Contact 3");
         }
 
-        //Toast.makeText(getApplicationContext(), "Current nums are: "+phoneNum1 + " , "+phoneNum2+" , "+phoneNum3+" .", Toast.LENGTH_LONG).show();
-
-        //MQTT
+        /**
+         *  MQTT initialisation
+         *  When opening the app
+         *  Send "Hello from Android" to Raspberry Pi -> Indicating phone connection
+         */
         dataReceived = findViewById(R.id.dataReceived);
         mqttHelper = new MqttHelper(getApplicationContext());
-
         if(firstTime) {
             startMqtt("Test","Hello ", "from Android","","" );
             firstTime = false;
@@ -271,7 +289,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         final Button helpButton = findViewById(R.id.HELPbutton);
 
-        //Warn if battery level low, send HELP signal if battery below 15%
+        /**
+         *  Warn if battery level low, send HELP signal if battery below the certain level
+         */
         batteryLife();
 
 
@@ -284,13 +304,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
         /********************************* End Help Button *********************************/
 
+
         /********************************* Google Map Implementation *********************************/
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        /********************************* End Google Map Implementation *********************************/
+
 
         /********************************* SMS Implementation *********************************/
-
-
         sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend1 = true;
@@ -309,14 +330,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 getLocation(mMap, true);
             }
         });
-
     }
-
     /************ Help Button Implementation *******************/
-
-    /**
-     *
-     */
     void HelpButton(){
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
@@ -367,23 +382,40 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
     }
 
-    /******* To-Do List *************/
+    /*************************************** To-Do List *****************************/
+    /**
+     * Get main_menu.xml and use inflater
+     * to put the xml structure in main_activity
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Update the database
+     * For the to-do list
+     * During click the + button
+     * Using action_add_task.xml layout
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_task:
                 final EditText taskEditText = new EditText(this);
+                /**
+                 * Set dialog for user to input the list
+                 */
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
                         .setMessage("What do you want to do next?")
                         .setView(taskEditText)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                            /**
+                             * Creating SQLiteDatabase
+                             * To store the task
+                             */
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String task = String.valueOf(taskEditText.getText());
@@ -404,7 +436,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                         .setNegativeButton("Cancel", null)
                         .create();
                 dialog.show();
-
                 return true;
             case R.id.user_setting:
                 openUserSettings();
@@ -413,6 +444,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
 
+    /**
+     * Update the to-do list ui
+     */
     private void updateUI() {
         ArrayList<String> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
@@ -425,27 +459,26 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
             taskList.add(cursor.getString(idx));
         }
-
+        /**
+         * If the array adapter is null
+         *      Create a new one to store/show the task
+         * Else,
+         *      Update the adapter
+         */
         if (mAdapter == null) {
             mAdapter = new ArrayAdapter<>(this,
                     R.layout.item_todo,
                     R.id.task_title,
                     taskList);
-
-
-
             mTaskListView.setAdapter(mAdapter);
 
             if(mAdapter.getCount()!=0){
                 mTaskListView.setVisibility(View.VISIBLE);
             }
-
         } else {
-
             mAdapter.clear();
             mAdapter.addAll(taskList);
             mAdapter.notifyDataSetChanged();
-
             if(mAdapter.getCount()!=0) {
                 mTaskListView.setVisibility(View.VISIBLE);
             }
@@ -453,10 +486,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 mTaskListView.setVisibility(View.GONE);
             }
         }
-
         cursor.close();
         db.close();
     }
+
+    /**
+     * Delete the task
+     * From the database
+     */
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
         TextView taskTextView = parent.findViewById(R.id.task_title);
@@ -468,6 +505,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         db.close();
         updateUI();
     }
+    /*************************************** End To-Do List *****************************/
+
 
     /********************************************** Implementation: User setting ******************************************/
     void UpdateBooleanUserSetting(SharedPreferences dataSaved){
@@ -545,6 +584,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
 
+    /**
+     *  Update the image for the user
+     *  Decode the bitmap
+     *  and update the button image
+     */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void UpdateImage(SharedPreferences dataSaved, String person, Button sendContact){
         String bitmapFromSetting = dataSaved.getString(person,null);
@@ -553,11 +597,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             BitmapDrawable bdrawable = new BitmapDrawable(getResources(),bitmap);
             sendContact.setBackground(bdrawable);
         }
-
-
     }
 
-    // Decode image string base64 to bitmap
+    /**
+     * Decode image string base64 to bitmap
+     * In order to store the image in SharedPreference
+     * to pass be
+     */
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
@@ -567,6 +613,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     /********************************************** Function: MQTT part ****************************************/
 
+    /**
+     *  Function to publish and subscribe to/from mqtt broker
+     */
     private void startMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
         switch (topic) {
             case("Current"):
@@ -582,14 +631,28 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         mqttHelper.setCallback(new MqttCallbackExtended(){
             @Override
             public void connectComplete(boolean b, String s){
+                /**
+                 * Connection complete -> change app title
+                 */
                 changeTitle("Wristband Connected");
             }
             @Override
             public void connectionLost(Throwable throwable) {
+                /**
+                 * Lost connection -> change app title
+                 */
                 changeTitle("Wristband Not Connected");
             }
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                /**
+                 * Subscribed and receive the message from the wristband
+                 * Change app title
+                 * If msg == Warning
+                 *      Call Help function to start navigation
+                 *  Else
+                 *      Change title;
+                 */
                 String msgReceived = mqttMessage.toString();
                 Log.w("Debug",msgReceived);
                 dataReceived.setText(msgReceived);
@@ -597,23 +660,26 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 switch(msgReceived){
                     case ("Warning"):
                         HelpButton();
+                        break;
                     default:
                         dataReceived.setText(msgReceived);
                         changeTitle("Wristband Connected");
-
+                        break;
                 }
             }
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
         });
-
     }
 
+    /**
+     * Function to change app title
+     */
     void changeTitle(String title){
         getSupportActionBar().setTitle(title);
     }
-
     /********************************************** End: MQTT part ******************************************/
+
 
     /********************************************** Function: Location Implementation ******************************************/
     private void requestPermissions(){
