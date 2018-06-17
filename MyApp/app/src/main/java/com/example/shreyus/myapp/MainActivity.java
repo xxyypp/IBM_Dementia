@@ -245,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         mHelper = new TaskDbHelper(this);
         mTaskListView = findViewById(R.id.list_todo);
         mTaskListView.setVisibility(View.GONE);
+
         updateUI();
 
         //sendNotification();
@@ -333,19 +334,19 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend1 = true;
-                sendSMSMessage();
+                getLocationSMS();
             }
         });
         sendContact2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend2 = true;
-                sendSMSMessage();
+                getLocationSMS();
             }
         });
         sendContact3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend3 = true;
-                sendSMSMessage();
+                getLocationSMS();
             }
         });
 
@@ -372,7 +373,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe|restaurant|food|drink|police&key=" + PLACES_API_KEY;
 
                     //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
-                    sendSMSMessage();
+
+                    sendSMSMessage(false);
+
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                 }
@@ -412,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         switch (item.getItemId()) {
             case R.id.action_add_task:
                 final EditText taskEditText = new EditText(this);
+                //String task = taskEditText.getText().toString();
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
                         .setMessage("What do you want to do next?")
@@ -421,6 +426,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                             public void onClick(DialogInterface dialog, int which) {
                                 String task = String.valueOf(taskEditText.getText());
                                 if(task.trim().length()>0) {
+                                    mqttHelper.connect("ToDo", task);
                                     SQLiteDatabase db = mHelper.getWritableDatabase();
                                     ContentValues values = new ContentValues();
                                     values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
@@ -436,6 +442,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                         .setNegativeButton("Cancel", null)
                         .create();
                 dialog.show();
+
                 return true;
             case R.id.user_setting:
                 openUserSettings();
@@ -704,7 +711,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
 
     /********************************************** Function: SMS part ******************************************/
-    protected void sendSMSMessage() {
+    public void sendSMSMessage(boolean sendDest) {
 
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},MY_PERMISSION_REQUEST_SEND_SMS);
@@ -712,7 +719,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if((phoneNum1 != null && !phoneNum1.isEmpty())||
                (phoneNum2 != null && !phoneNum2.isEmpty())||
                (phoneNum3 != null && !phoneNum3.isEmpty())){
-                SendTextMsg(false,"");
+                SendTextMsg(sendDest);
+
             }else{
                 Toast.makeText(getApplicationContext(),"Please set your contact number(s)!", Toast.LENGTH_LONG).show();
             }
@@ -725,7 +733,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_SEND_SMS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SendTextMsg(false,"");
+                    //SendTextMsg(false,"");
                 } else {
                     Toast.makeText(getApplicationContext(),"SMS failed, please allow permission and try again.", Toast.LENGTH_LONG).show();
                 }
@@ -734,14 +742,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
 
     //***** Main function to send txt message to pre-define contact short-cut *******
-    private void SendTextMsg(Boolean boolDest, String urlDest) {
+    private void SendTextMsg(Boolean boolDest) {
         SmsManager smsManager = SmsManager.getDefault();
         String messageToSend;
+
+        message = "Your HELP is needed. Current location: "+ url;
+
         if(boolDest) {
-            messageToSend = "Your HELP is needed. Current location: " + url + " \nNext safe place: " + urlDest;
-        }
-        else{
-            messageToSend = "Your HELP is needed. Current location: "+ url;
+            message = "Next safe place: "+ urlDest;
         }
 
         if(boolSend1 && (phoneNum1 != null && !phoneNum1.isEmpty())){
@@ -764,13 +772,15 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
         else{
             if ((phoneNum1 != null && !phoneNum1.isEmpty()) && phoneNum1 !="") {
-                smsManager.sendTextMessage(phoneNum1, null, messageToSend, null, null);
+                smsManager.sendTextMessage(phoneNum1, null, message, null, null);
+                Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, HELP is coming.",Toast.LENGTH_LONG).show();
+
             }
             if ((phoneNum2 != null && !phoneNum2.isEmpty()) && phoneNum2 !="") {
-                smsManager.sendTextMessage(phoneNum2, null, messageToSend, null, null);
+                smsManager.sendTextMessage(phoneNum2, null, message, null, null);
             }
             if ((phoneNum3 != null && !phoneNum3.isEmpty()) && phoneNum3 !="") {
-                smsManager.sendTextMessage(phoneNum3, null, messageToSend, null, null);
+                smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             }
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, HELP is coming.",Toast.LENGTH_LONG).show();
         }
@@ -832,6 +842,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     void Navigation(ArrayList<Locations> al,int i){
         destLat = al.get(i).getLat();
         destLongi = al.get(i).getLongi();
+        //Toast.makeText(MainActivity.this, "Before service in Navi...", Toast.LENGTH_LONG).show();
+
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+destLat+", "+destLongi+"&mode=w");
+        urlDest= "http://maps.google.com/maps?z=12&t=m&q=" + destLat + "+" + destLongi;
+        //Toast.makeText(MainActivity.this, urlDest.toString(), Toast.LENGTH_LONG).show();
+        sendSMSMessage(true);
 
         if(boolNavigation || boolList) {
             startMqtt("Current", currentLat, currentLongi, destLat, destLongi);
@@ -841,9 +857,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             startService(intent);
         }
 
-        Uri gmmIntentUri = Uri.parse("google.navigation:q="+destLat+", "+destLongi+"&mode=w");
-        urlDest= "http://maps.google.com/maps?z=12&t=m&q=" + destLat + "+" + destLongi;
-        SendTextMsg(true,urlDest);
+
+
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
@@ -917,7 +932,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
                     url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
-                    sendSMSMessage();
+                    sendSMSMessage(false);
                 } else {
                     Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                 }

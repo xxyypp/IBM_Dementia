@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".UserSetting">
 
+    <View
+        android:id="@+id/Guideline"
+        style="@style/Divider"
+        id="@+id/view"
+        android:layout_width="wrap_content"
+        android:layout_height="454dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnSetImg_3"
+        tools:layout_editor_absoluteX="0dp" />
+
     <EditText
         android:id="@+id/editNum2"
         android:layout_width="150dp"
@@ -31,12 +41,12 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="272dp"
+        android:layout_marginTop="284dp"
         android:ems="10"
         android:hint="Contact Num"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.056"
+        app:layout_constraintHorizontal_bias="0.052"
         app:layout_constraintStart_toEndOf="@+id/person1"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,11 +54,11 @@
         android:id="@+id/person1"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="44dp"
         android:hint="Person1"
         android:text="Person1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.01"
+        app:layout_constraintHorizontal_bias="0.009"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Person1" />
@@ -69,11 +79,11 @@
         android:id="@+id/person3"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_marginTop="264dp"
+        android:layout_marginTop="276dp"
         android:hint="Person3"
         android:text="Person3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.01"
+        app:layout_constraintHorizontal_bias="0.009"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Person3" />
@@ -81,17 +91,17 @@
     <EditText
         android:id="@+id/editNum1"
         android:layout_width="150dp"
-        android:layout_height="40dp"
+        android:layout_height="39dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="52dp"
         android:ems="10"
         android:hint="Contact Num"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.056"
+        app:layout_constraintHorizontal_bias="0.052"
         app:layout_constraintStart_toEndOf="@+id/person1"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -112,7 +122,7 @@
         android:layout_height="50dp"
         android:layout_marginLeft="304dp"
         android:layout_marginStart="304dp"
-        android:layout_marginTop="272dp"
+        android:layout_marginTop="276dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher_round" />
@@ -121,8 +131,8 @@
         android:id="@+id/btnSetImg_1"
         android:layout_width="120dp"
         android:layout_height="35dp"
-        android:layout_marginLeft="260dp"
-        android:layout_marginStart="260dp"
+        android:layout_marginLeft="264dp"
+        android:layout_marginStart="264dp"
         android:layout_marginTop="88dp"
         android:text="Update Img"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,9 +142,9 @@
         android:id="@+id/btnSetImg_2"
         android:layout_width="120dp"
         android:layout_height="35dp"
-        android:layout_marginLeft="264dp"
-        android:layout_marginStart="264dp"
-        android:layout_marginTop="204dp"
+        android:layout_marginLeft="262dp"
+        android:layout_marginStart="262dp"
+        android:layout_marginTop="200dp"
         android:text=" Update Img"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -143,9 +153,9 @@
         android:id="@+id/btnSetImg_3"
         android:layout_width="120dp"
         android:layout_height="35dp"
-        android:layout_marginLeft="264dp"
-        android:layout_marginStart="264dp"
-        android:layout_marginTop="336dp"
+        android:layout_marginLeft="268dp"
+        android:layout_marginStart="268dp"
+        android:layout_marginTop="324dp"
         android:text="Update Img"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -156,7 +166,7 @@
         android:layout_height="50dp"
         android:layout_marginLeft="304dp"
         android:layout_marginStart="304dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher_round" />
@@ -248,5 +258,35 @@
         app:layout_constraintBottom_toTopOf="@+id/switchList"
         app:layout_constraintEnd_toEndOf="@+id/switchList"
         app:layout_constraintStart_toStartOf="@+id/switchList" />
+
+    <View
+        style="@style/Divider"
+        android:layout_height="2dp"
+        android:layout_marginTop="115dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view3" />
+
+    <View
+        android:id="@+id/view3"
+        style="@style/Divider"
+        android:layout_height="2dp"
+        android:layout_marginTop="136dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Contacts"
+        android:layout_width="113dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="Contacts"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

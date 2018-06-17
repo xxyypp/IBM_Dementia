@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_vertical"
-    >
+    android:layout_gravity="center_vertical">
 
     <TextView
         android:id="@+id/task_title"
@@ -11,16 +10,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:gravity="fill_vertical"
         android:text="Hello"
         android:textSize="18sp" />
 
     <Button
         android:id="@+id/task_delete"
-        android:layout_width="63dp"
-        android:layout_height="36dp"
+        android:layout_width="54dp"
+        android:layout_height="28dp"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:onClick="deleteTask"
+        android:padding="2dp"
         android:text="Done" />
 
 

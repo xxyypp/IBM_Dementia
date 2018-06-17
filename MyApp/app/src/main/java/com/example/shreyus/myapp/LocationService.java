@@ -43,7 +43,7 @@ public class LocationService extends IntentService {
             final String destLat = intent.getStringExtra("destinationLat");
             final String destLongi = intent.getStringExtra("destinationLongi");
             while(true) {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
                 locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
