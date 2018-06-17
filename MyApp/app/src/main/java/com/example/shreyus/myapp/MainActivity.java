@@ -143,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     private ArrayAdapter<String> mAdapter;
 
     //User Setting
-    //public static final String EXTRA_MSG="com.example.myapp.usersetting";
     public static final String person1_id = "person1";
     public static final String person2_id = "person2";
     public static final String person3_id = "person3";
@@ -167,19 +166,17 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     //MQTT
     public MqttHelper mqttHelper;
-    byte[] encodedPayload = new byte[0];
     TextView dataReceived;
-    public boolean firstMqtt = true;
-    public String pub_current_location = "Current";
-    public String pub_dest_location = "Dest";
+
     //final String serverUri = "tcp://192.168.43.185:1883";
     final String serverUri = "tcp://192.168.1.145:61613";
-    final String clientId = "ExampleAndroidClient" + System.currentTimeMillis();
-    final String subscriptionTopic = "Test";
+
     final String username = "admin";
     final String password = "password";
 
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
+    int LOW_BATTERY_LIFE = 50;
+    int CRITICAL_BATTERY_LIFE = 20;
 
     //Google maps
     private GoogleMap mMap;
@@ -206,10 +203,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     String personName1,personName2,personName3;
     String message = "Help!";
     TextView txtContact1, txtContact2, txtContact3;
-
-//    String num1 = phoneNum1;
-//    String num2 = phoneNum2;
-//    String num3 = phoneNum3;
 
     boolean boolSend1 = false, boolSend2 = false, boolSend3 = false;
 
@@ -255,9 +248,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         //Link button variables to buttons in XML layout
 
-        Button sendContact1 = (Button) findViewById(R.id.contact1);//click button1 action:
-        Button sendContact2 = (Button) findViewById(R.id.contact2);
-        Button sendContact3 = (Button) findViewById(R.id.contact3);
+        Button sendContact1 = findViewById(R.id.contact1);//click button1 action:
+        Button sendContact2 = findViewById(R.id.contact2);
+        Button sendContact3 = findViewById(R.id.contact3);
         txtContact1 = findViewById(R.id.txtContact1);
         txtContact2 = findViewById(R.id.txtContact2);
         txtContact3 = findViewById(R.id.txtContact3);
@@ -367,7 +360,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 currentLongi= Double.toString(longi);
 
                 if (location != null) {
-                    //url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + longi;
                     url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
                     urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe|restaurant|food|drink|police&key=" + PLACES_API_KEY;
@@ -416,7 +408,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         switch (item.getItemId()) {
             case R.id.action_add_task:
                 final EditText taskEditText = new EditText(this);
-                //String task = taskEditText.getText().toString();
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
                         .setMessage("What do you want to do next?")
@@ -506,15 +497,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         db.close();
         updateUI();
     }
+
     /********************************************** Implementation: User setting ******************************************/
     void UpdateBooleanUserSetting(SharedPreferences dataSaved){
         boolVibrate = dataSaved.getBoolean(VIBRATION, true);
         boolList = dataSaved.getBoolean(LIST, true);
         boolNavigation = dataSaved.getBoolean(MAP, true);
         boolBattery = dataSaved.getBoolean(BATTERY, true);
-    }
-    public void userSetting(View view){
-        openUserSettings();
     }
 
     public void openUserSettings(){
@@ -581,28 +570,15 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 txtContact3.setText("Contact 3");
             }
 
-
-//            if((personName1 != null && !personName1.isEmpty())||
-//               (personName2 != null && !personName2.isEmpty())||
-//               (personName3 != null && !personName3.isEmpty())){
-//                sendContact1.setText(personName1);
-//                sendContact2.setText(personName2);
-//                sendContact3.setText(personName3);
-//            }else{
-//                sendContact1.setText("Contact 1");
-//                sendContact2.setText("Contact 2");
-//                sendContact3.setText("Contact 3");
-//            }
-
             /******** End Edit Update Info*************/
         }
     }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void UpdateImage(SharedPreferences dataSaved, String person, Button sendContact){
         String bitmapFromSetting = dataSaved.getString(person,null);
         if(bitmapFromSetting!=null && !bitmapFromSetting.isEmpty()){
             Bitmap bitmap = decodeBase64(bitmapFromSetting);
-            //img.setImageBitmap(bitmap);
             BitmapDrawable bdrawable = new BitmapDrawable(getResources(),bitmap);
             sendContact.setBackground(bdrawable);
         }
@@ -619,17 +595,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** End: User setting ******************************************/
 
     /********************************************** Function: MQTT part ****************************************/
-    void sendMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
-        Log.i("MQTT", "In send MQTT function ************************");
-        //mqttHelper.publishToTopic(topic,"Hello from Android");
-        mqttHelper.publishMessage(topic,"Hello from Android");
-        /*try {
-                        mqttHelper.mqttAndroidClient.publish(topic, ("Hello from Android").getBytes(),0,false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }*/
 
-    }
     private void startMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
         switch (topic) {
             case("Current"):
@@ -744,7 +710,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     //***** Main function to send txt message to pre-define contact short-cut *******
     private void SendTextMsg(Boolean boolDest) {
         SmsManager smsManager = SmsManager.getDefault();
-        String messageToSend;
 
         message = "Your HELP is needed. Current location: "+ url;
 
@@ -784,11 +749,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             }
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, HELP is coming.",Toast.LENGTH_LONG).show();
         }
-
-        //Default
-        //smsManager.sendTextMessage(phoneNum, null, message, null, null);
-
-
     }
     /********************************************** End SMS function ******************************************/
 
@@ -839,6 +799,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             e.printStackTrace();
         }
     }
+
     void Navigation(ArrayList<Locations> al,int i){
         destLat = al.get(i).getLat();
         destLongi = al.get(i).getLongi();
@@ -856,8 +817,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             intent.putExtra("destinationLongi", destLongi);
             startService(intent);
         }
-
-
 
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -878,20 +837,18 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         //If battery life is very low, send text message to contacts with location
 
-        if(batLevel <=20) {
+        if(batLevel <=CRITICAL_BATTERY_LIFE) {
             if(boolVibrate && boolBattery){
                 vibrate();
             }
             if(boolBattery) {
                 Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
             }
-            //sendNotification(batLevel);
             getLocationSMS();
         }
         //Warn if battery life is getting low - user should charge before heading out
-        else if(batLevel <=50){
+        else if(batLevel <=LOW_BATTERY_LIFE){
 
-            //sendNotification();
             sendNotification(batLevel);
 
             if(boolVibrate && boolBattery){
@@ -909,7 +866,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         String title = "Battery";
         String subject = "Battery Low Level";
-        String body = "Current battery life is: " + batLevel + " Critical Battery Life!";
+        String body;
+        if(batLevel<=CRITICAL_BATTERY_LIFE) {
+            body = "Current battery life is: " + batLevel + " Critical Battery Life!";
+        }
+        else{
+            body = "Current battery life is: " + batLevel+". Please consider charging before leaving";
+        }
         NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notify = new Notification.Builder(getApplicationContext()).setContentTitle(title).
                 setContentText(body).setContentTitle(subject).setSmallIcon(R.drawable.config_configuration_settings_icon_64).build();
