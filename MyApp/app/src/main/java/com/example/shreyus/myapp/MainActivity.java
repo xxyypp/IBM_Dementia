@@ -1,8 +1,6 @@
 package com.example.shreyus.myapp;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
 import java.util.ArrayList;
 
 //Location import
@@ -12,21 +10,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import java.util.ArrayList;
 
 //SMS import
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.app.TaskStackBuilder;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,15 +26,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
@@ -57,9 +43,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.ActivityCompat;
@@ -67,36 +51,20 @@ import android.support.v4.app.ActivityCompat;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** Pre-define ******************************************/
 
     /******** To-Do list *********/
-    private static final String TAG = "MainActivity";
     private TaskDbHelper mHelper;
     private ListView mTaskListView;
     private ArrayAdapter<String> mAdapter;
@@ -171,8 +138,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     //final String serverUri = "tcp://192.168.43.185:1883";
     final String serverUri = "tcp://192.168.1.145:61613";
 
-    final String username = "admin";
-    final String password = "password";
+    //final String username = "admin";
+    //final String password = "password";
 
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
     int LOW_BATTERY_LIFE = 50;
@@ -492,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
-        TextView taskTextView = (TextView) parent.findViewById(R.id.task_title);
+        TextView taskTextView = parent.findViewById(R.id.task_title);
         String task = String.valueOf(taskTextView.getText());
         SQLiteDatabase db = mHelper.getWritableDatabase();
         db.delete(TaskContract.TaskEntry.TABLE,
@@ -657,7 +624,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
      * Checks for location permissions first. If permissions are granted, then
      * enable "My location" and calls getLocation function to fetch current
      * location latitude/longitude data
-     * @param googleMap
+     * @param googleMap Google maps map instance
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -709,8 +676,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_SEND_SMS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //SendTextMsg(false,"");
-                } else {
+                }
+                else {
                     Toast.makeText(getApplicationContext(),"SMS failed, please allow permission and try again.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -739,7 +706,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             smsManager.sendTextMessage(phoneNum3, null, message, null, null);
             boolSend3 = false;
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, help is coming.",Toast.LENGTH_LONG).show();
-        }else if((boolSend1 && (phoneNum1 == null || phoneNum1.isEmpty())) || (boolSend2 && (phoneNum2 == null || phoneNum2.isEmpty())) || (boolSend3 && (phoneNum3 == null || phoneNum3.isEmpty()))) {
+        }else if(boolSend1 || boolSend2 || boolSend3) {
             Toast.makeText(getApplicationContext(),"Please set this contact number!", Toast.LENGTH_LONG).show();
             boolSend1=false;
             boolSend2=false;
@@ -788,8 +755,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             /************ Navigation *******************/
             if(boolNavigation){
                 Navigation(al,0);
-            }else{
-                //startMqtt("Test",currentLat,currentLongi,currentLat,currentLongi);
             }
             /******************************************/
             if(boolList){
@@ -838,7 +803,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** End Search the nearest safe place  *****************************************/
 
 
-    /********************************************** Function: Search the nearest safe place  ***********************************/
+    /********************************************** Function: Battery Life   ***********************************/
+    /**
+     * Checks battery life of the phone. If battery level is low, calls vibrate
+     * function (optional) and displays message. Sends a notification to the phone
+     * to alert the user that battery is low.
+     * If battery level is critical, also sends a help signal (SMS) to contacts
+     * with current location URL.
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void batteryLife(){
         BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
@@ -890,39 +862,18 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         notif.notify(0, notify);
     }
 
-    /********************************************** End Search the nearest safe place  *****************************************/
-    /**
-     *
-     */
-    void getLocationSMS(){
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions();
-            return;
-        }
-        locationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                double lat = location.getLatitude();
-                double longi = location.getLongitude();
-                if (location != null) {
-
-                    url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
-
-                    sendSMSMessage(false);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
+    /********************************************** End Battery life  *****************************************/
 
     /**
      * First makes sure permissions are granted, uses FusedLocationProvider Client
      * to get last location when available (latitude/longitude), and animate the
      * Google map camera to the current location (or move camera if preferred)
-     * @param mMap
+     * Calls SMS function if bool is set (used when clicking on contacts).
+     * @param mMap Google Map instance (to animate camera)
+     * @param sendSMS Boolean to determine whether or not to send message with
+     *                current location URL
      */
-    void getLocation(final GoogleMap mMap, final boolean SMS){
+    void getLocation(final GoogleMap mMap, final boolean sendSMS){
 
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
@@ -938,7 +889,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi),8.0f));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi),16.0f));
 
-                    if(SMS) {
+                    if(sendSMS) {
                         url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
                         sendSMSMessage(false);
                     }
