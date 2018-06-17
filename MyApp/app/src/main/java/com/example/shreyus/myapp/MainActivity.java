@@ -327,25 +327,29 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend1 = true;
-                getLocationSMS();
+                getLocation(mMap, true);
             }
         });
         sendContact2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend2 = true;
-                getLocationSMS();
+                getLocation(mMap, true);
             }
         });
         sendContact3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend3 = true;
-                getLocationSMS();
+                getLocation(mMap, true);
             }
         });
 
     }
 
     /************ Help Button Implementation *******************/
+
+    /**
+     *
+     */
     void HelpButton(){
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
@@ -649,6 +653,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
     }
 
+    /**
+     * Checks for location permissions first. If permissions are granted, then
+     * enable "My location" and calls getLocation function to fetch current
+     * location latitude/longitude data
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -659,7 +669,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
-            getLocation(mMap);
+            getLocation(mMap, false);
         }
     }
 
@@ -844,7 +854,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if(boolBattery) {
                 Toast.makeText(getApplicationContext(), "Current battery life is: " + batLevel + ". Critical battery life.", Toast.LENGTH_LONG).show();
             }
-            getLocationSMS();
+            getLocation(mMap, true);
         }
         //Warn if battery life is getting low - user should charge before heading out
         else if(batLevel <=LOW_BATTERY_LIFE){
@@ -881,6 +891,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
 
     /********************************************** End Search the nearest safe place  *****************************************/
+    /**
+     *
+     */
     void getLocationSMS(){
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
@@ -903,7 +916,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
     }
 
-    void getLocation(final GoogleMap mMap){
+    /**
+     * First makes sure permissions are granted, uses FusedLocationProvider Client
+     * to get last location when available (latitude/longitude), and animate the
+     * Google map camera to the current location (or move camera if preferred)
+     * @param mMap
+     */
+    void getLocation(final GoogleMap mMap, final boolean SMS){
 
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
@@ -919,13 +938,22 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi),8.0f));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi),16.0f));
 
+                    if(SMS) {
+                        url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
+                        sendSMSMessage(false);
+                    }
+
                 } else {
-                    Toast.makeText(getApplicationContext(), "Oops, cannot get GPS right now.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Cannot get GPS right now.", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
+    /**
+     * Called by battery warning function to vibrate to alert user that phone
+     * needs charging. Pattern set to vibrate once (no repeat).
+     */
     void vibrate(){
         long[] pattern = {0,400,400,400,400,600};
         v.vibrate(pattern, -1);
