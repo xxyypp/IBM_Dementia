@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         /** Check if first time setup the app
          *  If yes, go to setting page
-         *          and update the tuple in SharedPreferences
+         *  and update the tuple in SharedPreferences
          * */
         if(dataSaved.getString("firstTimeSetup", null)==null){
             openUserSettings();
@@ -332,6 +332,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
     }
     /************ Help Button Implementation *******************/
+    /**
+     * Function that is called when the HELP button is pressed on phone or wristband
+     * First checks for location permissions
+     * Obtains last known location from FusedLocationProviderClient (lat/longitude)
+     * Creates two URLs.. One for current location via SMS (url), and one
+     * to be used for the parseJsonData function to display nearest safe places
+     * (urljson).
+     */
     void HelpButton(){
         if (ActivityCompat.checkSelfPermission(MainActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
@@ -346,8 +354,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 currentLongi= Double.toString(longi);
 
                 if (location != null) {
+                    //URL to send via SMS with current location
                     url = "http://maps.google.com/maps?z=12&t=m&q=" + lat + "+" + longi;
 
+                    //URL for json formatted nearby safe locations
                     urljson = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + "," + longi + "&rankby=distance&type=cafe|restaurant|food|drink|police&key=" + PLACES_API_KEY;
 
                     //Toast.makeText(getApplicationContext(), "Current location:\n" + lat + "," + longi, Toast.LENGTH_LONG).show();
@@ -363,6 +373,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     StringRequest request = new StringRequest(urljson, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String string) {
+                            //If json exists, parse it for nearby safe locations
                             parseJsonData(string);
                         }
                     }, new Response.ErrorListener() {
@@ -419,6 +430,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String task = String.valueOf(taskEditText.getText());
+                                //Check if input is not whitespace
                                 if(task.trim().length()>0) {
                                     mqttHelper.connect("ToDo", task);
                                     SQLiteDatabase db = mHelper.getWritableDatabase();
@@ -516,6 +528,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         boolBattery = dataSaved.getBoolean(BATTERY, true);
     }
 
+    /**
+     * Opens user settings activity
+     */
     public void openUserSettings(){
         Intent intent = new Intent(this, UserSetting.class);
 
@@ -614,8 +629,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** Function: MQTT part ****************************************/
 
     /**
-     *  Function to publish and subscribe to/from mqtt broker
+     * Function to publish and subscribe to/from mqtt broker
+     * @param topic topic in MQTT broker to subscribe/publish to
+     * @param currentLat Current latitude to send to wristband
+     * @param currentLongi Current longitude to send to wristband
+     * @param lat Destinaton latitude to send to wristband
+     * @param longi Destinaton longitude to send to wristband
      */
+
     private void startMqtt(String topic,String currentLat, String currentLongi, String lat, String longi){
         switch (topic) {
             case("Current"):
@@ -674,6 +695,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     /**
      * Function to change app title
+     * @param title String to set the title to in the Action bar
      */
     void changeTitle(String title){
         getSupportActionBar().setTitle(title);
@@ -682,6 +704,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
 
     /********************************************** Function: Location Implementation ******************************************/
+    /**
+     * Requests location permissions (Fine location)
+     */
     private void requestPermissions(){
         ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
     }
@@ -720,6 +745,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
 
     /********************************************** Function: SMS part ******************************************/
+    /**
+     * First, checks for SMS permissions
+     * If at least one phone number has been set, sends message
+     * Either set to send destination location (nearby safe place) by SMS
+     * or only current location by SMS.
+     * @param sendDest determines whether or not to send destination location by SMS
+     *                 (if true, sends destination)
+     */
     public void sendSMSMessage(boolean sendDest) {
 
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
@@ -750,7 +783,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
 
-    //***** Main function to send txt message to pre-define contact short-cut *******
+    /**
+     * Sends the SMS using SmsManager
+     * Depending on how the function was called, either sends current location or
+     * sends destination location (next safe place).
+     * If contact icons are clicked in the app, sends current location to that specific contact.
+     * If HELP button is pressed, sends to all contacts with a phone number set up.
+     * @param boolDest
+     */
     private void SendTextMsg(Boolean boolDest) {
         SmsManager smsManager = SmsManager.getDefault();
 
@@ -796,6 +836,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /********************************************** End SMS function ******************************************/
 
     /********************************************** Function: Search the nearest safe place  *****************************************/
+    /**
+     * Reads the JSON url link as a string (jsonString)
+     * Obtains the relevant results and stores in an array of class "Locations".
+     * Also stores only names as a seperate array, to be displayed in a clickable
+     * list in the UI, if the list option is enabled.
+     * If "instant" navigation is turned on, app automatically navigates to nearest location
+     * @param jsonString the content of the JSON url of nearby places, as a string
+     */
     void parseJsonData(String jsonString) {
         try {
             JSONObject allJSON = new JSONObject(jsonString);
@@ -804,8 +852,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
             final ArrayList<Locations> al = new ArrayList<Locations>();
             final ArrayList names = new ArrayList();
-            final ArrayList<ArrayList<String>> destLocation = new ArrayList<ArrayList<String>>();
-            ArrayList<String> arrayDest = new ArrayList<>();
 
             for(int i = 0; i < locationArray.length(); ++i) {
                 locationObj = locationArray.getJSONObject(i);
