@@ -1,4 +1,12 @@
 # IBM_Dementia
+
+Welcome to the IBM Dementia Protector repo! To view relevant documentation and tutorials, please go to the wiki: 
+https://github.com/xxyypp/IBM_Dementia/wiki
+
+***
+
+## Features:
+
 *	Ideas:
 	* Alarm when phone and wristband connectivity drops
 	* Battery life warning (under 50%) and automatic HELP when battery at 10% (with battery life as reasoning)
