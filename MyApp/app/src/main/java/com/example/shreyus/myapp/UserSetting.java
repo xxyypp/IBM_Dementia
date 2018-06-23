@@ -67,7 +67,9 @@ public class UserSetting extends AppCompatActivity {
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
         final SharedPreferences.Editor editor = dataSaved.edit();
 
-        /******** Select Image *********/
+        /**
+         * Select Image
+         */
         selectImg1 = findViewById(R.id.btnSetImg_1);
         selectImg2 = findViewById(R.id.btnSetImg_2);
         selectImg3 = findViewById(R.id.btnSetImg_3);
@@ -108,9 +110,11 @@ public class UserSetting extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent,"Select Photo: "), SELECT_IMG_3);
             }
         });
-        /******** End Select Image Intent *********/
 
-        /********* Update Switch Info ********************/
+
+        /**
+         * Update Switch Info
+         */
         /*switchVibration.setChecked(dataSaved.getBoolean(VIBRATION, true));
         switchVibration.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -124,12 +128,16 @@ public class UserSetting extends AppCompatActivity {
         UpdateSwitchInfo(dataSaved,switchBattery,BATTERY, editor);
         UpdateSwitchInfo(dataSaved,switchNavigation,MAP, editor);
 
-        /******* Update Image *********/
+        /**
+         *  Update Image
+         */
         UpdateImage(dataSaved,person1_img,imageView1);
         UpdateImage(dataSaved,person2_img,imageView2);
         UpdateImage(dataSaved,person3_img,imageView3);
 
-        /******** Display info *********/
+        /**
+         * Display info
+         */
         EditText editNum1 = findViewById(R.id.editNum1);
         EditText editNum2 = findViewById(R.id.editNum2);
         EditText editNum3 = findViewById(R.id.editNum3);
@@ -151,9 +159,15 @@ public class UserSetting extends AppCompatActivity {
         personName1.setText(name1);
         personName2.setText(name2);
         personName3.setText(name3);
-        /******** End Display info *********/
+        /**
+         * End Display info
+         */
     }
 
+    /**
+     * Function to save data/setting
+     * @param view
+     */
     public void SaveInfo(View view) {
 
         Intent tomainIntent = new Intent(this, MainActivity.class);
@@ -188,7 +202,13 @@ public class UserSetting extends AppCompatActivity {
         finish();
 
     }
-    /********** Get switch info *******************/
+    /**
+     * Function to get switch info
+     * @param dataSaved database name to store everything
+     * @param switch_ Switch button name/id
+     * @param tuple_name tuple name to store into the database
+     * @param editor SharedPreferences' editor
+     */
     void UpdateSwitchInfo(SharedPreferences dataSaved, Switch switch_, final String tuple_name, final SharedPreferences.Editor editor){
         switch_.setChecked(dataSaved.getBoolean(tuple_name, true));
         switch_.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -201,7 +221,13 @@ public class UserSetting extends AppCompatActivity {
     }
 
 
-    /******** Intent result from Photo Gallery ********************/
+    /**
+     *  Intent result from Photo Gallery
+     *  @param requestCode requestCode to identify the activity/intent
+     *  @param resultCode resultCode return from the intent
+     *  @param data data return from the intent
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
 
@@ -242,6 +268,12 @@ public class UserSetting extends AppCompatActivity {
         }
     }
 
+    /**
+     * Function to load image
+     * @param imageView imageView id
+     * @param bitmap bitmap of the image
+     * @param person person name for the image
+     */
     void setImage(ImageView imageView, Bitmap bitmap, String person){
         imageView.setImageBitmap(bitmap);
         SharedPreferences savedFile = getSharedPreferences(PREFS_NAME,0);
@@ -249,6 +281,13 @@ public class UserSetting extends AppCompatActivity {
         editor.putString(person,encodeTobase64(bitmap));
         editor.commit();
     }
+
+    /**
+     * Function to update the image
+     * @param dataSaved database that save the image
+     * @param person person id in the database(primary key)
+     * @param img image to be updated
+     */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void UpdateImage(SharedPreferences dataSaved, String person, ImageView img){
 
@@ -258,7 +297,12 @@ public class UserSetting extends AppCompatActivity {
             img.setImageBitmap(bitmap);
         }
     }
-    //Image encoding
+
+    /**
+     * Image encoding to be stored into SharedPreferences
+     * @param image image to be encoded
+     * @return return string after encoded
+     */
     public static String encodeTobase64(Bitmap image) {
         Bitmap immage = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -269,12 +313,22 @@ public class UserSetting extends AppCompatActivity {
         Log.d("Image Log:", imageEncoded);
         return imageEncoded;
     }
-    // Decode image string base64 to bitmap
+    /**
+     * Decode image string base64 to bitmap
+     * @param input input string to be decoded into bitmap
+     * @return return bitmap after decoded
+     * */
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
+    /**
+     * Function to compress the image after input
+     * @param uri uri of the image
+     * @param bitmap bitmap of the image
+     * @return return compressed image/bitmap
+     */
     public static Bitmap resize(Uri uri,Bitmap bitmap){
         int maxSize = 960;
         int outWidth;
@@ -293,15 +347,14 @@ public class UserSetting extends AppCompatActivity {
         return compressedBitmap;
     }
 
-//    private static int exifToDegrees(int exifOrientation) {
-//        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
-//        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
-//        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
-//        return 0;
-//    }
-
+    /**
+     * Function to scale the image and rotate it to the correct orientation
+     * @param uri image uri
+     * @param bitmap image bitmap
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public Bitmap scaleDownAndRotatePic(Uri uri, Bitmap bitmap) {//you can provide file path here
+    public Bitmap scaleDownAndRotatePic(Uri uri, Bitmap bitmap) {
         int orientation;
         InputStream in;
         try {
@@ -349,47 +402,4 @@ public class UserSetting extends AppCompatActivity {
             return null;
         }
     }
-
-    /*private static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
-        Matrix matrix = new Matrix();
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_NORMAL:
-                return bitmap;
-            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                matrix.setScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.setRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                matrix.setRotate(180);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_TRANSPOSE:
-                matrix.setRotate(90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.setRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_TRANSVERSE:
-                matrix.setRotate(-90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.setRotate(-90);
-                break;
-            default:
-                return bitmap;
-        }
-        try {
-            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
-
-            return bmRotated;
-        } catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 }

@@ -102,9 +102,6 @@ class Locations {
 public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
-    /********************************************** Pre-define ******************************************/
-
-    /******** To-Do list *********/
     private TaskDbHelper mHelper;
     private ListView mTaskListView;
     private ArrayAdapter<String> mAdapter;
@@ -131,11 +128,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     public boolean boolBattery;
     public boolean firstTime = true;
 
-    /** MQTT declaration */
+    /* MQTT declaration */
     public MqttHelper mqttHelper;
     TextView dataReceived;
 
-    /** Place api key*/
+    /* Place api key*/
     String PLACES_API_KEY = "AIzaSyBVGJYHClfBB8sMIkb1wNqJLqeLlYkcnzo";
     /**
      *  Two different battery warning levels:
@@ -178,18 +175,16 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /** Used for vibration function */
     public static Vibrator v;
 
-    /********************************************** End Pre-define ******************************************/
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /** Change app title while initialing the app */
+        /* Change app title while initialing the app */
         changeTitle("Wristband Not Connected");
 
-        /** retrieve data saved */
+        /* retrieve data saved */
         SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
         UpdateBooleanUserSetting(dataSaved);
 
@@ -294,24 +289,19 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
          */
         batteryLife();
 
-
-        /********************************* Help Button Implementation *********************************/
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 HelpButton();
             }
         });
-        /********************************* End Help Button *********************************/
 
-
-        /********************************* Google Map Implementation *********************************/
+        //Google Map implementation
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        /********************************* End Google Map Implementation *********************************/
 
 
-        /********************************* SMS Implementation *********************************/
+        //SMS Implementation
         sendContact1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 boolSend1 = true;
@@ -331,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             }
         });
     }
-    /************ Help Button Implementation *******************/
+
     /**
      * Function that is called when the HELP button is pressed on phone or wristband
      * First checks for location permissions
@@ -393,10 +383,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
     }
 
-    /*************************************** To-Do List *****************************/
+
     /**
+     * To-do List
      * Get main_menu.xml and use inflater
      * to put the xml structure in main_activity
+     * @param menu menu instance for the xml
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -409,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
      * For the to-do list
      * During click the + button
      * Using action_add_task.xml layout
+     * @param item the button to add the to-do list is clicked
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -505,6 +498,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     /**
      * Delete the task
      * From the database
+     * @param view Delete current view for the specific task
      */
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
@@ -517,10 +511,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         db.close();
         updateUI();
     }
-    /*************************************** End To-Do List *****************************/
 
 
-    /********************************************** Implementation: User setting ******************************************/
+    /**
+     * Update the User setting when open the app or return from user setting
+     * @param dataSaved database name that data saved to
+     */
     void UpdateBooleanUserSetting(SharedPreferences dataSaved){
         boolVibrate = dataSaved.getBoolean(VIBRATION, true);
         boolList = dataSaved.getBoolean(LIST, true);
@@ -543,7 +539,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     }
 
-    //Update User Info
+    /**
+     * Update User Info Function after return from another Intent
+     * @param requestCode requestCode -> to specific different Intent
+     * @param resultCode ResultCode returned from the Intent
+     * @param data Data pass back from the Intent
+     */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -554,7 +555,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         if(resultCode == RESULT_UPDATE){
 
             Toast.makeText(this, "You have successfully updated your contact details", Toast.LENGTH_LONG).show();
-            /******** Edit Update Info*************/
 
             SharedPreferences dataSaved = getSharedPreferences(PREFS_NAME, 0);
             UpdateBooleanUserSetting(dataSaved);
@@ -603,6 +603,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
      *  Update the image for the user
      *  Decode the bitmap
      *  and update the button image
+     *  @param dataSaved database name
+     *  @param person Person id in the database
+     *  @param sendContact button id
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void UpdateImage(SharedPreferences dataSaved, String person, Button sendContact){
@@ -618,6 +621,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
      * Decode image string base64 to bitmap
      * In order to store the image in SharedPreference
      * to pass be
+     * @param input bitmap string that stored in the database
      */
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
@@ -700,10 +704,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     void changeTitle(String title){
         getSupportActionBar().setTitle(title);
     }
-    /********************************************** End: MQTT part ******************************************/
 
 
-    /********************************************** Function: Location Implementation ******************************************/
     /**
      * Requests location permissions (Fine location)
      */
@@ -744,8 +746,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         return false;
     }
 
-    /********************************************** Function: SMS part ******************************************/
+
     /**
+     * SMS:
      * First, checks for SMS permissions
      * If at least one phone number has been set, sends message
      * Either set to send destination location (nearby safe place) by SMS
@@ -833,9 +836,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             Toast.makeText(getApplicationContext(), "SMS sent. Please do not worry, HELP is coming.",Toast.LENGTH_LONG).show();
         }
     }
-    /********************************************** End SMS function ******************************************/
 
-    /********************************************** Function: Search the nearest safe place  *****************************************/
     /**
      * Reads the JSON url link as a string (jsonString)
      * Obtains the relevant results and stores in an array of class "Locations".
@@ -912,10 +913,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
 
-    /********************************************** End Search the nearest safe place  *****************************************/
 
-
-    /********************************************** Function: Battery Life   ***********************************/
     /**
      * Checks battery life of the phone. If battery level is low, calls vibrate
      * function (optional) and displays message. Sends a notification to the phone
@@ -974,7 +972,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         notif.notify(0, notify);
     }
 
-    /********************************************** End Battery life  *****************************************/
 
     /**
      * First makes sure permissions are granted, uses FusedLocationProvider Client

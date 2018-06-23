@@ -33,6 +33,7 @@ public class LocationService extends IntentService {
      * The IntentService calls this method from the default worker thread with
      * the intent that started the service. When this method returns, IntentService
      * stops the service, as appropriate.
+     * @param intent
      */
     @SuppressLint("MissingPermission")
     @Override

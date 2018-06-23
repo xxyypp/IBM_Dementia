@@ -40,6 +40,10 @@ public class MqttHelper {
         //final String username = "admin";
         //final String password = "password";
 
+    /**
+     * MQTT helper function to start mqtt
+     * @param context
+     */
     public MqttHelper(Context context){
         MemoryPersistence memPer = new MemoryPersistence();
         /** Setup mqtt client */
@@ -73,7 +77,11 @@ public class MqttHelper {
         mqttAndroidClient.setCallback(callback);
     }
 
-    /** Connection function*/
+    /**
+     * Connection function
+     * @param topic topic to be published
+     * @param  message message to be published
+     * */
     public void connect(final String topic, final String message){
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
@@ -111,7 +119,11 @@ public class MqttHelper {
             ex.printStackTrace();
         }
     }
-    /** Publish function*/
+    /**
+     * Publish function
+     * @param publishMessage message to be published
+     * @param publishTopic message topic
+     * */
     public void publishMessage(String publishTopic,String publishMessage){
 
         try {
