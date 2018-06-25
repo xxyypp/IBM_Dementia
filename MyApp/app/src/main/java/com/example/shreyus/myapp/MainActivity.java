@@ -541,7 +541,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     /**
      * Update User Info Function after return from another Intent
-     * @param requestCode requestCode -> to specific different Intent
+     * @param requestCode requestCode to specific different Intent
      * @param resultCode ResultCode returned from the Intent
      * @param data Data pass back from the Intent
      */
